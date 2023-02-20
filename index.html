@@ -21,7 +21,7 @@
 
         // Find the characteristic that supports the notify property. That is the one that executes when
         // a dartboard segment is hit
-        boardCharacteristic = (await service.getCharacteristic(GRANBOARD_UUID)).find(characteristic => characteristic.properties.notify);
+        boardCharacteristic = (await service.getCharacteristics()).find(characteristic => characteristic.properties.notify);
 
         characteristic.addEventListener("characteristicvaluechanged", onSegmentHit);
 
