@@ -23,9 +23,9 @@
         // a dartboard segment is hit
         boardCharacteristic = (await service.getCharacteristics()).find(characteristic => characteristic.properties.notify);
 
-        characteristic.addEventListener("characteristicvaluechanged", onSegmentHit);
+        boardCharacteristic.addEventListener("characteristicvaluechanged", onSegmentHit);
 
-        await characteristic.startNotifications();
+        await boardCharacteristic.startNotifications();
     }
 
     async function onSegmentHit(event)
