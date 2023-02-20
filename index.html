@@ -30,7 +30,11 @@
 
     async function onSegmentHit(event)
     {
-        console.log(event.target.value);
+        const a = event.target.value.getInt8(0);
+        const b = event.target.value.getInt8(1);
+        const c = event.target.value.getInt8(2);
+        const d = event.target.value.getInt8(3);
+        console.log(`Length: ${event.target.value.byteLength}, Values: ${a}-${b}-${c}-${d}`);
     }
 </script>
 </head>
