@@ -2,15 +2,35 @@
 <head>
 <title>Da Dart Board</title>
 <script>
-    const Granboard_Service_UUID = "442f1570-8a00-9a28-cbe1-e1d4212d53eb";
+    const GRANBOARD_UUID = "442f1570-8a00-9a28-cbe1-e1d4212d53eb";
+
+    let boardCharacteristic = undefined;
 
     async function connectToDartboard() {
-        const board = await navigator.bluetooth.requestDevice({filters:[{services: [Granboard_Service_UUID]}]});
+        if (boardCharacteristic) {
+            // Unregister the previous listener
+            boardCharacteristic.removeEventListener("characteristicvaluechanged", onSegmentHit);
+        }
+
+        const board = await navigator.bluetooth.requestDevice({filters:[{services: [GRANBOARD_UUID]}]});
         if (!board.gatt.connected) {
             await board.gatt.connect();
         }
 
-        const service = await board.gatt.getPrimaryService(Granboard_Service_UUID);
+        const service = await board.gatt.getPrimaryService(GRANBOARD_UUID);
+
+        // Find the characteristic that supports the notify property. That is the one that executes when
+        // a dartboard segment is hit
+        boardCharacteristic = (await service.getCharacteristic(GRANBOARD_UUID)).find(characteristic => characteristic.properties.notify);
+
+        characteristic.addEventListener("characteristicvaluechanged", onSegmentHit);
+
+        await characteristic.startNotifications();
+    }
+
+    async function onSegmentHit(event)
+    {
+        console.log(event.target.value);
     }
 </script>
 </head>
