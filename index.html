@@ -4,6 +4,32 @@
 <script>
     const GRANBOARD_UUID = "442f1570-8a00-9a28-cbe1-e1d4212d53eb";
 
+    const SEGMENT_MAPPING = {
+        ""
+    }
+
+    const SEGMENTS = 
+    {
+        // Bullseye
+        CNT_BULL: 0,
+        DBL_BULL: 1,
+        // 1
+        CNT_1: 2,
+        DBL_1: 3,
+        OTR_1: 4,
+        TRP_1: 5,
+        // 2
+        CNT_2: 6,
+        DBL_2: 7,
+        OTR_2: 8,
+        TRP_2: 9,
+        // 3
+        CNT_1: 2,
+        DBL_1: 3,
+        OTR_1: 4,
+        TRP_1: 5,
+    }
+
     let boardCharacteristic = undefined;
 
     async function connectToDartboard() {
@@ -30,11 +56,9 @@
 
     async function onSegmentHit(event)
     {
-        const a = event.target.value.getInt8(0);
-        const b = event.target.value.getInt8(1);
-        const c = event.target.value.getInt8(2);
-        const d = event.target.value.getInt8(3);
-        console.log(`Length: ${event.target.value.byteLength}, Values: ${a}-${b}-${c}-${d}`);
+        let segmentID = new Uint8Array(event.target.value.buffer).join("-")
+        
+        console.log(segmentID);
     }
 </script>
 </head>
