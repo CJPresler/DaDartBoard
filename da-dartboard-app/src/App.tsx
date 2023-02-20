@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import './App.css';
-import { Dartboard } from './Utillities/Dartboard';
+import { Dartboard, Segment } from './Utillities/Dartboard';
 
 function App() {
-  const [dartboard, setDarboard] = useState<Dartboard>();
+  const [/*unused*/, setDarboard] = useState<Dartboard>();
+  const [lastSegmentHit, setLastSegmentHit] = useState<Segment>();
+
+  const onSegmentHit = useCallback((segment: Segment) => {
+    setLastSegmentHit(segment);
+  }, [])
 
   return (
     <div className="App">
       <header className="App-header">
-        <button onClick={async () => {setDarboard(await Dartboard.ConnectToBoard())}}>Connect to board</button>
+        <button onClick={async () => {setDarboard(await Dartboard.ConnectToBoard(onSegmentHit))}}>Connect to board</button>
+        <h2>{lastSegmentHit?.LongName}</h2>
       </header>
     </div>
   );
