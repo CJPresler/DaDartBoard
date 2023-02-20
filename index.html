@@ -2,13 +2,23 @@
 <head>
 <title>Da Dart Board</title>
 <script>
+    const Granboard_Service_UUID = "442f1570-8a00-9a28-cbe1-e1d4212d53eb";
 
+    async function connectToDartboard() {
+        const board = await navigator.bluetooth.requestDevice({filters:[{services: [Granboard_Service_UUID]}]});
+        if (!board.gatt.connected) {
+            await board.gatt.connect();
+        }
+
+        const service = await board.gatt.getPrimaryService(Granboard_Service_UUID);
+    }
 </script>
 </head>
 <body>
 <p>
 <h3>Testing Dart Board Connection</h3>
 </p>
+<button onclick="connectToDartboard()">Connect to board</button>
 <p>
 </body>
 </html>
