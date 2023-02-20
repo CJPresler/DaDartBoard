@@ -11,11 +11,12 @@ const getWinner = (ctx: Ctx): string | null => {
 
 interface TicTacToeProps extends BoardProps<TicTacToeState> {}
 
-export const TicTacToeBoard = ({ G, ctx, moves }: TicTacToeProps) => {
-  let winner = getWinner(ctx);
+export const TicTacToeBoard = (state: TicTacToeProps) => {
+  let winner = getWinner(state.ctx);
 
   return (
     <main>
+      <h3>{state.isActive ? "Your Turn" : "Oponents Turn"}</h3>
       <div
         style={{
           display: 'grid',
@@ -25,10 +26,10 @@ export const TicTacToeBoard = ({ G, ctx, moves }: TicTacToeProps) => {
           width: 'fit-content',
         }}
       >
-        {G.cells.map((cell, index) => (
+        {state.G.cells.map((cell, index) => (
           <button
             key={index}
-            onClick={() => moves.clickCell(index)}
+            onClick={() => state.moves.clickCell(index)}
             disabled={cell !== null}
           >
             {cell}
