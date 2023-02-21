@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import './App.css';
-import { Dartboard, Segment } from './Utillities/Dartboard';
+import { Segment } from './Utillities/DartboardUtilities';
 import { Client } from 'boardgame.io/react'
 import { generateCredentials, P2P } from '@boardgame.io/p2p'
-import { TicTacToeGame } from './Games/TicTacToe';
-import { TicTacToeBoard } from './Boards/TicTacToeBoard';
 import { Configurator } from './Components/Configurator';
+import { Granboard } from './Utillities/Granboard';
+import { Dartboard } from './Boards/Dartboard';
+import { CricketGame } from './Games/Cricket';
 
 const uuid = () => Math.round(Math.random() * 1e16).toString(32);
 
@@ -29,8 +30,8 @@ const View = () => {
     if (showClient) {
       setGameView(() =>
         Client({
-          game: TicTacToeGame,
-          board: TicTacToeBoard,
+          game: CricketGame,
+          board: Dartboard,
           multiplayer: P2P({
             isHost,
             onError: (e) => {
@@ -81,7 +82,7 @@ const View = () => {
 };
 
 function App() {
-  const [/*unused*/, setDarboard] = useState<Dartboard>();
+  const [/*unused*/, setDarboard] = useState<Granboard>();
   const [lastSegmentHit, setLastSegmentHit] = useState<Segment>();
 
   const onSegmentHit = useCallback((segment: Segment) => {
@@ -90,7 +91,7 @@ function App() {
 
   return (
     <div className="App">
-        <button onClick={async () => {setDarboard(await Dartboard.ConnectToBoard(onSegmentHit))}}>Connect to Dartboard</button>
+        <button onClick={async () => {setDarboard(await Granboard.ConnectToBoard(onSegmentHit))}}>Connect to Dartboard</button>
         <h2>{lastSegmentHit?.LongName}</h2>
         <h2>TicTacToe Test</h2>
         <View />
