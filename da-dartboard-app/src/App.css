@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+
+.svgInteractive:hover {
+  filter: invert(25%);
+}
+
+@keyframes hitAnimation {
+  from {filter: invert(0%)}
+  to {filter: invert(50%)}
+}
+
+.hit {
+  animation-name: hitAnimation;
+  animation-duration: 0.5s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+}

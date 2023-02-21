@@ -20,6 +20,7 @@ export interface Player {
 // Overall game state
 export interface CricketState {
     players: Record<string, Player>;
+    lastHit: Segment | undefined;
 }
 
 export const CricketGame: Game<CricketState> = {
@@ -29,7 +30,7 @@ export const CricketGame: Game<CricketState> = {
             players[i.toString()] = { score: 0, sectionsHit: { 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0 }, dartThrows: [[]] }
         }
 
-        return { players }
+        return { players, lastHit: undefined }
     },
 
     moves: {
@@ -41,8 +42,9 @@ export const CricketGame: Game<CricketState> = {
                 }
 
                 // Record the throw as long as it was a valid segment
-                if (segment.Section < 25) {
+                if (segment.Section <= 25) {
                     state.G.players[state.ctx.currentPlayer].dartThrows[0].push(segment);
+                    state.G.lastHit = segment;
                 }
 
                 // In Cricket we don't care about any segments below 15, and anything above 21 is invalid
@@ -94,6 +96,9 @@ export const CricketGame: Game<CricketState> = {
 
             // New up a new array for current throws and insert it at the beginning
             playerData.dartThrows = [[], ...playerData.dartThrows];
+
+            // Reset the lastHit
+            state.G.lastHit = undefined;
         },
     },
 
