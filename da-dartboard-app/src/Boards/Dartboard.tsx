@@ -6,6 +6,7 @@ import { CreateSegment, Segment, SegmentID } from '../Utillities/DartboardUtilit
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, styled, tableCellClasses, ButtonGroup } from '@mui/material'
 import { Icon } from '@mdi/react'
 import { mdiHexagonOutline, mdiHexagonSlice3, mdiHexagonSlice6 } from '@mdi/js'
+import { Granboard } from '../Utillities/Granboard';
 
 const getWinner = (ctx: Ctx): string | null => {
     if (!ctx.gameover) return null;
@@ -47,14 +48,21 @@ interface DartboardProps extends BoardProps<CricketState> { }
 export const Dartboard = (props: DartboardProps) => {
     let winner = getWinner(props.ctx);
 
+    const [/*unused*/, setDarboard] = useState<Granboard>();
+
     const [boardColorDark] = useState('#2a3236');
     const [boardColorLight] = useState('#F7E9CD');
     const [boardColorAccent1] = useState('#ED3737');
     const [boardColorAccent2] = useState('#4F9962');
 
     const onSegmentHit = useCallback((segment: Segment) => {
+        if (segment.ID === SegmentID.RESET_BUTTON) {
+            // The reset button is a special case and is used to end the turn
+            props.events.endTurn?.();
+            return;
+        }
         props.moves.dartHit(segment);
-    }, [props.moves])
+    }, [props.moves, props.events])
 
     const getSegmentClassNames = useCallback((shortName: string) => {
         return 'svgInteractive' + (props.G.lastHit?.ShortName === shortName ? ' hit' : '');
@@ -62,6 +70,8 @@ export const Dartboard = (props: DartboardProps) => {
 
     return (
         <main>
+            <Button variant='contained' onClick={async () => { setDarboard(await Granboard.ConnectToBoard(onSegmentHit)) }}>Connect to Dartboard</Button>
+
             <h3>{props.isActive ? "Your Turn" : "Oponents Turn"}</h3>
 
             <TableContainer component={Paper} sx={{ maxWidth: 600, margin: 'auto' }}>
