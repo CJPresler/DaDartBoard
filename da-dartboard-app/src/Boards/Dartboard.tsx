@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { BoardProps } from 'boardgame.io/react';
 import { Ctx } from 'boardgame.io';
 import { CricketState } from '../Games/Cricket';
-import { CreateSegment, Segment, SegmentID, SegmentSection, SegmentType } from '../Utillities/DartboardUtilities';
+import { CreateSegment, Segment, SegmentID } from '../Utillities/DartboardUtilities';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, styled, tableCellClasses, ButtonGroup } from '@mui/material'
 import { Icon } from '@mdi/react'
 import { mdiHexagonOutline, mdiHexagonSlice3, mdiHexagonSlice6 } from '@mdi/js'
