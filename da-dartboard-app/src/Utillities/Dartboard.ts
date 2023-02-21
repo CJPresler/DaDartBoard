@@ -44,7 +44,7 @@ export enum SegmentSection {
     Eighteen,
     Nineteen,
     Twenty,
-    BULL,
+    BULL = 25,
     RESET_BUTTON,
 }
 
@@ -83,47 +83,47 @@ const SEGMENT_MAPPING = {
 }
 
 export class Segment {
-    public readonly SegmentID: SegmentID;
-    public readonly SegmentType: SegmentType;
-    public readonly SegmentSection: SegmentSection;
+    public readonly ID: SegmentID;
+    public readonly Type: SegmentType;
+    public readonly Section: SegmentSection;
     public readonly Value: number;
     public readonly LongName: String;
     public readonly ShortName: String;
 
     public constructor(segmentId: SegmentID) {
-        this.SegmentID = segmentId;
+        this.ID = segmentId;
 
         // There are 80 regular segments, and then 3 special (bullseye, double bullseye, and reset button)
         if (segmentId < 80) {
             switch (segmentId % 4) {
                 case 1:
-                    this.SegmentType = SegmentType.Triple;
+                    this.Type = SegmentType.Triple;
                     break;
                 case 3:
-                    this.SegmentType = SegmentType.Double;
+                    this.Type = SegmentType.Double;
                     break;
                 default:
-                    this.SegmentType = SegmentType.Single;
+                    this.Type = SegmentType.Single;
             }
-            this.SegmentSection = Math.ceil((segmentId + 1) / 4);
-            this.Value = this.SegmentSection * this.SegmentType
-            this.LongName = Segment.segmentTypeToString(this.SegmentType, false) + " " + this.SegmentSection;
-            this.ShortName = Segment.segmentTypeToString(this.SegmentType, true) + this.SegmentSection;
+            this.Section = Math.ceil((segmentId + 1) / 4);
+            this.Value = this.Section * this.Type
+            this.LongName = Segment.segmentTypeToString(this.Type, false) + " " + this.Section;
+            this.ShortName = Segment.segmentTypeToString(this.Type, true) + this.Section;
         } else {
             // The segment is either bullseye or the reset button
-            switch (this.SegmentID)
+            switch (this.ID)
             {
                 case SegmentID.BULL:
                 case SegmentID.DBL_BULL:
-                    this.SegmentType = this.SegmentID === SegmentID.BULL ? SegmentType.Single : SegmentType.Double;
-                    this.SegmentSection = SegmentSection.BULL;
-                    this.Value = this.SegmentID === SegmentID.BULL ? 25 : 50;
-                    this.LongName = Segment.segmentTypeToString(this.SegmentType, false) + " Bullseye";
-                    this.ShortName = Segment.segmentTypeToString(this.SegmentType, true) + "BULL";
+                    this.Type = this.ID === SegmentID.BULL ? SegmentType.Single : SegmentType.Double;
+                    this.Section = SegmentSection.BULL;
+                    this.Value = this.ID === SegmentID.BULL ? 25 : 50;
+                    this.LongName = Segment.segmentTypeToString(this.Type, false) + " Bullseye";
+                    this.ShortName = Segment.segmentTypeToString(this.Type, true) + "BULL";
                     break;
                 default:
-                    this.SegmentType = SegmentType.Other;
-                    this.SegmentSection = SegmentSection.RESET_BUTTON;
+                    this.Type = SegmentType.Other;
+                    this.Section = SegmentSection.RESET_BUTTON;
                     this.Value = 0;
                     this.LongName = "Reset Button";
                     this.ShortName = "RST";

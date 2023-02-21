@@ -37,7 +37,7 @@ const View = () => {
               setError(e.type);
             }
           }),
-          debug: false
+          debug: true
         })
       );
     } else {

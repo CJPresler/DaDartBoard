@@ -32,15 +32,18 @@ export const TicTacToeGame: Game<TicTacToeState> = {
 
     turn: {
         minMoves: 1,
-        maxMoves: 1,
     },
 
     moves: {
-        clickCell: (state, id: number) => {
-            if (state.G.cells[id] !== null) {
-                return INVALID_MOVE;
-            }
-            state.G.cells[id] = state.ctx.currentPlayer;
+        clickCell: {
+            move: (state, id: number) => {
+                // If the space was already occupied or a move has allready occured in this turn it is invalid
+                if (state.G.cells[id] !== null || (state.ctx.numMoves ?? 0) > 0) {
+                    return INVALID_MOVE;
+                }
+                state.G.cells[id] = state.ctx.currentPlayer;
+            },
+            undoable: true,
         },
     },
 
@@ -52,5 +55,7 @@ export const TicTacToeGame: Game<TicTacToeState> = {
         if (IsDraw(state.G.cells)) {
             return { draw: true };
         }
-    }
+    },
+
+    disableUndo: false,
 }

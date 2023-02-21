@@ -36,6 +36,12 @@ export const TicTacToeBoard = (state: TicTacToeProps) => {
           </button>
         ))}
       </div>
+      <button className="cta" onClick={()=>state.events.endTurn?.()}>
+          End Turn
+      </button>
+      <button className="cta" onClick={state.undo}>
+          Undo
+      </button>
 
       {winner && <p>{winner}</p>}
     </main>
