@@ -37,6 +37,10 @@
   }
 }
 
+.svgInteractive {
+  cursor: pointer;
+}
+
 .svgInteractive:hover {
   filter: invert(25%);
 }
