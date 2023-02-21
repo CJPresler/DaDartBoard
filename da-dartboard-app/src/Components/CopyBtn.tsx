@@ -1,29 +1,32 @@
-import { useEffect, useState } from 'react';
+import { FunctionComponent, PropsWithChildren, useEffect, useState } from 'react';
+import { Button } from '@mui/material'
 
 /**
  * Button to copy the provided value to the clipboard.
  *
  * If `navigator.clipboard.writeText` is not available, returns `null`.
  */
-export function CopyBtn({ value }: { value: string }) {
+export const CopyBtn: FunctionComponent<PropsWithChildren<{ value: string }>> = (props) => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setCopied(false);
-  }, [value]);
+  }, [props.value]);
 
-  if (!navigator?.clipboard?.writeText) return null;
+  if (!navigator?.clipboard?.writeText) return <div/>;
 
-  const copy = () => {
-    navigator.clipboard.writeText(value).then(() => setCopied(true));
+  const copy = async () => {
+    await navigator.clipboard.writeText(props.value);
+    setCopied(true);
+    setTimeout(() => {setCopied(false)}, 2000);
   };
 
   return (
     <span>
-      <button type="button" onClick={copy}>
-        Copy
-      </button>{' '}
-      <small>{copied && 'Copied!'}</small>
+      <Button type="button" onClick={copy}>
+        {props.children}
+      </Button>
+      <small>{copied && ' Copied!'}</small>
     </span>
   );
 }

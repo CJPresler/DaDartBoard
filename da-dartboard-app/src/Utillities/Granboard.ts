@@ -1,4 +1,4 @@
-import { Segment, SegmentID } from "./DartboardUtilities";
+import { CreateSegment, Segment, SegmentID } from "./DartboardUtilities";
 
 const GRANBOARD_UUID = "442f1570-8a00-9a28-cbe1-e1d4212d53eb";
 
@@ -78,7 +78,7 @@ export class Granboard {
 
         if (segmentID !== undefined) {
             console.log(segmentID)
-            this.segmentHitCallback(new Segment(segmentID));
+            this.segmentHitCallback(CreateSegment(segmentID));
         } else {
             console.log(`Unknown segment: ${segmentID}`);
         }

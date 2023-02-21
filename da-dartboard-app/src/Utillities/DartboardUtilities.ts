@@ -20,6 +20,7 @@ export enum SegmentID {
     INNER_19, TRP_19, OUTER_19, DBL_19,
     INNER_20, TRP_20, OUTER_20, DBL_20,
     BULL, DBL_BULL,
+    MISS,
     RESET_BUTTON,
 }
 
@@ -45,6 +46,7 @@ export enum SegmentSection {
     Nineteen,
     Twenty,
     BULL = 25,
+    MISS,
     RESET_BUTTON,
 }
 
@@ -55,67 +57,79 @@ export enum SegmentType {
     Other = 4,
 }
 
-export class Segment {
-    public readonly ID: SegmentID;
-    public readonly Type: SegmentType;
-    public readonly Section: SegmentSection;
-    public readonly Value: number;
-    public readonly LongName: String;
-    public readonly ShortName: String;
+export interface Segment {
+    ID: SegmentID;
+    Type: SegmentType;
+    Section: SegmentSection;
+    Value: number;
+    LongName: String;
+    ShortName: String;
+}
 
-    public constructor(segmentId: SegmentID) {
-        this.ID = segmentId;
+export const SegmentTypeToString = (type: SegmentType, shorthand: boolean) => {
+    switch (type) {
+        case SegmentType.Single:
+            return "";
+        case SegmentType.Double:
+            return shorthand ? "D" : "Double";
+        case SegmentType.Triple:
+            return shorthand ? "T" : "Triple";
+    }
 
+    return "";
+}
+
+export const CreateSegment = (segmentId: SegmentID) : Segment => {
         // There are 80 regular segments, and then 3 special (bullseye, double bullseye, and reset button)
         if (segmentId < 80) {
+            let Type = SegmentType.Other;
             switch (segmentId % 4) {
                 case 1:
-                    this.Type = SegmentType.Triple;
+                    Type = SegmentType.Triple;
                     break;
                 case 3:
-                    this.Type = SegmentType.Double;
+                    Type = SegmentType.Double;
                     break;
                 default:
-                    this.Type = SegmentType.Single;
+                    Type = SegmentType.Single;
             }
-            this.Section = Math.ceil((segmentId + 1) / 4);
-            this.Value = this.Section * this.Type
-            this.LongName = Segment.segmentTypeToString(this.Type, false) + " " + this.Section;
-            this.ShortName = Segment.segmentTypeToString(this.Type, true) + this.Section;
+            const Section = Math.ceil((segmentId + 1) / 4);
+            const Value = Section * Type
+            const LongName = SegmentTypeToString(Type, false) + " " + Section;
+            const ShortName = SegmentTypeToString(Type, true) + Section;
+            
+            return {ID: segmentId, Type, Section, Value, LongName, ShortName};
         } else {
             // The segment is either bullseye or the reset button
-            switch (this.ID)
+            switch (segmentId)
             {
                 case SegmentID.BULL:
                 case SegmentID.DBL_BULL:
-                    this.Type = this.ID === SegmentID.BULL ? SegmentType.Single : SegmentType.Double;
-                    this.Section = SegmentSection.BULL;
-                    this.Value = this.ID === SegmentID.BULL ? 25 : 50;
-                    this.LongName = Segment.segmentTypeToString(this.Type, false) + " Bullseye";
-                    this.ShortName = Segment.segmentTypeToString(this.Type, true) + "BULL";
-                    break;
+                    let Type = segmentId === SegmentID.BULL ? SegmentType.Single : SegmentType.Double;
+                    let Section = SegmentSection.BULL;
+                    let Value = segmentId === SegmentID.BULL ? 25 : 50;
+                    let LongName = SegmentTypeToString(Type, false) + " Bullseye";
+                    let ShortName = SegmentTypeToString(Type, true) + "BULL";
+                    return {ID: segmentId, Type, Section, Value, LongName, ShortName};
+                case SegmentID.RESET_BUTTON:
+                    return {  
+                        ID: segmentId,
+                        Type: SegmentType.Other,
+                        Section: SegmentSection.RESET_BUTTON,
+                        Value: 0,
+                        LongName: "Reset Button",
+                        ShortName: "RST",
+                    };
+                case SegmentID.MISS:
                 default:
-                    this.Type = SegmentType.Other;
-                    this.Section = SegmentSection.RESET_BUTTON;
-                    this.Value = 0;
-                    this.LongName = "Reset Button";
-                    this.ShortName = "RST";
-                    break;
-
+                    return {
+                        ID: segmentId,
+                        Type: SegmentType.Other,
+                        Section: SegmentSection.RESET_BUTTON,
+                        Value: 0,
+                        LongName: "Miss",
+                        ShortName: "Miss",
+                    }
             }
         }
     }
-
-    private static segmentTypeToString(type: SegmentType, shorthand: boolean) {
-        switch (type) {
-            case SegmentType.Single:
-                return "";
-            case SegmentType.Double:
-                return shorthand ? "D" : "Double";
-            case SegmentType.Triple:
-                return shorthand ? "T" : "Triple";
-        }
-
-        return "";
-    }
-}
