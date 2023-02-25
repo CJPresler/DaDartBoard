@@ -175,7 +175,7 @@ export const Dartboard = (props: DartboardProps) => {
                     </svg>
                     <Button
                         className="cta"
-                        sx={{position: 'absolute', top:5, right: 5}}
+                        sx={{position: 'absolute', top:0, right: 0}}
                         onClick={async () => { setGranboard(await Granboard.ConnectToBoard(onSegmentHit))}}
                     >
                         <Icon path={granboard ? mdiBluetoothConnect : mdiBluetooth} />

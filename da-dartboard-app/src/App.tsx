@@ -7,6 +7,9 @@ import { CricketGame } from './Games/Cricket';
 import { CopyBtn } from './Components/CopyBtn';
 import { ThemeProvider, CssBaseline, createTheme } from '@mui/material'
 
+// Request to keep the device alive so the game doesn't disconnect
+(navigator as any)?.wakeLock.request();
+
 const queryParameters = new URLSearchParams(window.location.search);
 const joinGameParamter = queryParameters.get("joinGame");
 
