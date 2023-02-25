@@ -3,8 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://cjpresler.github.io/DaDartboard",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "postinstall": "node scripts/postinstall.js"
+  },
   "dependencies": {
-    "@boardgame.io/p2p": "^0.4.4",
+    "@boardgame.io/p2p": "file:../submodules/p2p",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/roboto": "^4.5.8",
@@ -27,13 +34,8 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@types/web-bluetooth": "^0.0.16"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "@types/web-bluetooth": "^0.0.16",
+    "shelljs": "^0.8.5"
   },
   "eslintConfig": {
     "extends": [

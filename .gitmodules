@@ -1,0 +1,3 @@
+[submodule "submodules/p2p"]
+	path = submodules/p2p
+	url = https://github.com/boardgameio/p2p.git
