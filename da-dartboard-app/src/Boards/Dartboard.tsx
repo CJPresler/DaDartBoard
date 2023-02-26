@@ -5,7 +5,7 @@ import { CricketState } from '../Games/Cricket';
 import { CreateSegment, Segment, SegmentID } from '../Utillities/DartboardUtilities';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, styled, tableCellClasses, ButtonGroup } from '@mui/material'
 import { Icon } from '@mdi/react'
-import { mdiHexagonOutline, mdiHexagonSlice3, mdiHexagonSlice6, mdiBluetooth, mdiBluetoothConnect } from '@mdi/js'
+import { mdiHexagonOutline, mdiHexagonSlice3, mdiHexagonSlice6, mdiBluetooth, mdiBluetoothConnect, mdiLanDisconnect } from '@mdi/js'
 import { Granboard } from '../Utillities/Granboard';
 
 const getWinner = (ctx: Ctx): string | null => {
@@ -209,7 +209,7 @@ export const Dartboard = (props: DartboardProps) => {
                     <TableBody>
                         {Array.from(Array(props.ctx.numPlayers).keys()).map((row) => (
                             <StyledTableRow>
-                                <StyledTableCell component="th" scope="row">{`Player ${row}`}</StyledTableCell>
+                                <StyledTableCell component="th" scope="row">{!props.matchData?.at(row)?.isConnected && (<Icon path={mdiLanDisconnect} style={{display: 'inline-block', verticalAlign: 'middle', marginRight: 5}} size={1} color="#ED3737"/>)}{`Player ${row}`}</StyledTableCell>
                                 <StyledTableCell align="right">{getSectionIcon(props.G.players[row.toString()].sectionsHit[15])}</StyledTableCell>
                                 <StyledTableCell align="right">{getSectionIcon(props.G.players[row.toString()].sectionsHit[16])}</StyledTableCell>
                                 <StyledTableCell align="right">{getSectionIcon(props.G.players[row.toString()].sectionsHit[17])}</StyledTableCell>
