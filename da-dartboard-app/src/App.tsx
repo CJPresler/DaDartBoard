@@ -11,7 +11,9 @@ import { ThemeProvider, CssBaseline, createTheme } from '@mui/material'
 (navigator as any)?.wakeLock.request();
 
 const queryParameters = new URLSearchParams(window.location.search);
-const joinGameParamter = queryParameters.get("joinGame");
+const QueryParamJoinGame = queryParameters.get("joinGame");
+const QueryParamName = queryParameters.get("name");
+const QueryParamNumPlayers = parseInt(queryParameters.get("numPlayers") ?? '2');
 
 const uuid = () => Math.round(Math.random() * 1e16).toString(32);
 
@@ -22,9 +24,9 @@ const darkTheme = createTheme({
 });
 
 function App() {
-  const matchID = useMemo(() => joinGameParamter ? joinGameParamter : uuid(), []);
-  const isHost = useMemo(() => joinGameParamter ? false : true, []);
-  const joinURL = useMemo(() => `${window.location}${isHost ? `?joinGame=${matchID}` : ''}`, [matchID, isHost]);
+  const matchID = useMemo(() => QueryParamJoinGame ? QueryParamJoinGame : uuid(), []);
+  const isHost = useMemo(() => QueryParamJoinGame ? false : true, []);
+  const joinURL = useMemo(() => `${window.location.origin}${window.location.pathname}${isHost ? `?joinGame=${matchID}` : ''}`, [matchID, isHost]);
   const [error, setError] = useState<null | string>(null);
 
   const credentials = useMemo(() => generateCredentials(), []);
@@ -32,14 +34,16 @@ function App() {
   const GameView = useMemo(() =>
     Client({
       game: CricketGame,
+      numPlayers: QueryParamNumPlayers,
       board: Dartboard,
       multiplayer: P2P({
+        playerName: QueryParamName ? QueryParamName : isHost ? 'Host' : 'Guest',
         isHost,
         onError: (e) => {
           setError(e.type);
         }
       }),
-      debug: true
+      debug: false
     }), [isHost]
   )
 
@@ -57,7 +61,7 @@ function App() {
           </p>
         )}
         <CopyBtn value={joinURL}>Copy share URL</CopyBtn>
-        {isHost && <p>This is the match host.</p>}
+        {isHost && <p>You are the host</p>}
       </div>
     </div>
     </ThemeProvider>

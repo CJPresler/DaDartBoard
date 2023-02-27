@@ -70,7 +70,7 @@ export const Dartboard = (props: DartboardProps) => {
 
     return (
         <main>
-            <h3>{props.isActive ? "Your Turn" : "Oponents Turn"}</h3>
+            <h3>{props.isActive ? "Your Turn" : `${props.matchData?.at(parseInt(props.ctx.currentPlayer))?.name ?? "Oponnent"}'s Turn`}</h3>
 
             <TableContainer component={Paper} sx={{ maxWidth: 600, margin: 'auto' }}>
                 <Table>
@@ -209,7 +209,10 @@ export const Dartboard = (props: DartboardProps) => {
                     <TableBody>
                         {Array.from(Array(props.ctx.numPlayers).keys()).map((row) => (
                             <StyledTableRow>
-                                <StyledTableCell component="th" scope="row">{!props.matchData?.at(row)?.isConnected && (<Icon path={mdiLanDisconnect} style={{display: 'inline-block', verticalAlign: 'middle', marginRight: 5}} size={1} color="#ED3737"/>)}{`Player ${row}`}</StyledTableCell>
+                                <StyledTableCell component="th" scope="row">
+                                    {!props.matchData?.at(row)?.isConnected && (<Icon path={mdiLanDisconnect} style={{display: 'inline-block', verticalAlign: 'middle', marginRight: 5}} size={1} color="#ED3737"/>)}
+                                    {props.matchData?.at(row)?.name ? props.matchData?.at(row)?.name : `Player ${row + 1}`}
+                                </StyledTableCell>
                                 <StyledTableCell align="right">{getSectionIcon(props.G.players[row.toString()].sectionsHit[15])}</StyledTableCell>
                                 <StyledTableCell align="right">{getSectionIcon(props.G.players[row.toString()].sectionsHit[16])}</StyledTableCell>
                                 <StyledTableCell align="right">{getSectionIcon(props.G.players[row.toString()].sectionsHit[17])}</StyledTableCell>

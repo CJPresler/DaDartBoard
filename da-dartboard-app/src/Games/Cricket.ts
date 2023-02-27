@@ -24,6 +24,7 @@ export interface CricketState {
 }
 
 export const CricketGame: Game<CricketState> = {
+    name: "Cricket_Darts",
     setup: (state) => {
         const players: Record<string, Player> = {};
         for (let i = 0; i < state.ctx.numPlayers; i++) {
