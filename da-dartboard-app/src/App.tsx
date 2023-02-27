@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './App.css';
-import { Client } from 'boardgame.io/react'
+import { Client } from 'boardgame.io/client'
 import { generateCredentials, P2P } from '@boardgame.io/p2p'
 import { Dartboard } from './Boards/Dartboard';
-import { CricketGame } from './Games/Cricket';
+import { CricketGame, CricketState } from './Games/Cricket';
 import { CopyBtn } from './Components/CopyBtn';
 import { ThemeProvider, CssBaseline, createTheme } from '@mui/material'
 
@@ -29,13 +29,18 @@ function App() {
   const joinURL = useMemo(() => `${window.location.origin}${window.location.pathname}${isHost ? `?joinGame=${matchID}` : ''}`, [matchID, isHost]);
   const [error, setError] = useState<null | string>(null);
 
+  const [client, setClient] = useState<ReturnType<typeof Client<CricketState>>>();
+
   const credentials = useMemo(() => generateCredentials(), []);
 
-  const GameView = useMemo(() =>
-    Client({
+  // Manage the client
+  useEffect(() => {
+    const client = Client({
       game: CricketGame,
       numPlayers: QueryParamNumPlayers,
-      board: Dartboard,
+      playerID: isHost ? '0' : '1',
+      matchID,
+      credentials,
       multiplayer: P2P({
         playerName: QueryParamName ? QueryParamName : isHost ? 'Host' : 'Guest',
         isHost,
@@ -44,8 +49,16 @@ function App() {
         }
       }),
       debug: false
-    }), [isHost]
-  )
+    });
+
+    client.start();
+
+    setClient(client);
+
+    return () => {
+      client.stop();
+    }
+  }, [isHost, credentials, matchID]);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -53,7 +66,7 @@ function App() {
     <div className="App">
       <div>
         <div className="game-frame">
-          <GameView {...{ playerID: isHost ? '0' : '1', matchID, credentials }} />
+          <Dartboard client={client} />
         </div>
         {error && (
           <p className="error">
