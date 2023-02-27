@@ -6,6 +6,7 @@ import { Dartboard } from './Boards/Dartboard';
 import { CricketGame, CricketState } from './Games/Cricket';
 import { CopyBtn } from './Components/CopyBtn';
 import { ThemeProvider, CssBaseline, createTheme } from '@mui/material'
+import { AutoJoinClient } from './Utillities/AutoJoinClient';
 
 // Request to keep the device alive so the game doesn't disconnect
 (navigator as any)?.wakeLock.request();
@@ -35,10 +36,10 @@ function App() {
 
   // Manage the client
   useEffect(() => {
-    const client = Client({
+    const client = AutoJoinClient<CricketState>({
       game: CricketGame,
       numPlayers: QueryParamNumPlayers,
-      playerID: isHost ? '0' : '1',
+      playerID: isHost ? '0' : undefined,
       matchID,
       credentials,
       multiplayer: P2P({

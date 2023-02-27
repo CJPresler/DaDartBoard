@@ -97,10 +97,10 @@ export const Dartboard = (props: DartboardProps) => {
 
     return (
         <main>
-            {!props.client && (
+            {(!props.client || !props.client.playerID || !gameState) &&
                 <h3>Loading...</h3>
-            )}
-            {props.client && <Fragment>
+            }
+            {props.client && props.client.playerID && gameState && <Fragment>
                 <h3>{gameState?.isActive ? "Your Turn" : `${gameState?.ctx.currentPlayer ? props.client.matchData?.at(parseInt(gameState.ctx.currentPlayer))?.name ?? "Oponnent" : "Oponnent"}'s Turn`}</h3>
 
                 <TableContainer component={Paper} sx={{ maxWidth: 600, margin: 'auto' }}>
