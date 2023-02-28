@@ -27,6 +27,7 @@ import {
   mdiBluetooth,
   mdiBluetoothConnect,
   mdiLanDisconnect,
+  mdiArrowProjectile,
 } from "@mdi/js";
 import { Granboard } from "../Utillities/Granboard";
 import { CricketState } from "../Games/Cricket";
@@ -140,7 +141,12 @@ export const Dartboard = (props: DartboardProps) => {
       {props.client && props.client.playerID && gameState && (
         <Fragment>
           <h3>
-            {gameState?.isActive
+            {winner
+              ? `${
+                  props.client.matchData?.at(parseInt(winner))?.name ??
+                  `Player ${winner}`
+                } Wins!`
+              : gameState?.isActive
               ? "Your Turn"
               : `${
                   gameState?.ctx.currentPlayer
@@ -167,10 +173,10 @@ export const Dartboard = (props: DartboardProps) => {
                 <StyledTableRow>
                   {Array.from(Array(3).keys()).map((i) => (
                     <StyledTableCell component="th" scope="row" align="center">
-                      {
-                        gameState?.G.players[gameState?.ctx.currentPlayer]
-                          .dartThrows[0][i]?.ShortName
-                      }
+                      {gameState?.G.players[gameState?.ctx.currentPlayer]
+                        .dartThrows[0][i]?.ShortName ?? (
+                        <Icon path={mdiArrowProjectile} size="15" />
+                      )}
                     </StyledTableCell>
                   ))}
                 </StyledTableRow>
@@ -896,7 +902,6 @@ export const Dartboard = (props: DartboardProps) => {
           </TableContainer>
         </Fragment>
       )}
-      {winner && <p>{winner}</p>}
     </main>
   );
 };
