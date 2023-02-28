@@ -25,6 +25,8 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { AutoJoinClient } from "./Utillities/AutoJoinClient";
 
@@ -50,6 +52,7 @@ const darkTheme = createTheme({
 
 function App() {
   const [gameConfig, setGameConfig] = useState(gameConfigDefaultValues);
+  const [toastMessage, setToastMessage] = useState<string>();
 
   const joinURL = useMemo(
     () =>
@@ -101,6 +104,10 @@ function App() {
       client.start();
 
       setClient(client);
+
+      navigator.clipboard.writeText(joinURL).then(() => {
+        setToastMessage("Share link copied to clipboard");
+      });
     },
     [gameConfig]
   );
@@ -193,6 +200,13 @@ function App() {
           </div>
         )}
       </div>
+      <Snackbar
+        open={!!toastMessage}
+        autoHideDuration={3000}
+        onClose={() => setToastMessage(undefined)}
+      >
+        <Alert severity="success">{toastMessage}</Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 }

@@ -800,6 +800,11 @@ export const Dartboard = (props: DartboardProps) => {
               >
                 <Icon path={granboard ? mdiBluetoothConnect : mdiBluetooth} />
               </Button>
+              <h3
+                style={{ position: "absolute", top: -5, left: 0 }}
+              >{`Round ${Math.ceil(
+                gameState.ctx.turn / gameState.ctx.numPlayers
+              )}`}</h3>
             </div>
           </div>
           <ButtonGroup variant="outlined" aria-label="outlined button group">
