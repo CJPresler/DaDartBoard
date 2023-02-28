@@ -46,8 +46,12 @@
 }
 
 @keyframes hitAnimation {
-  from {filter: invert(0%)}
-  to {filter: invert(50%)}
+  from {
+    filter: invert(0%);
+  }
+  to {
+    filter: invert(50%);
+  }
 }
 
 .hit {
