@@ -105,11 +105,13 @@ function App() {
 
       setClient(client);
 
-      navigator.clipboard.writeText(joinURL).then(() => {
-        setToastMessage("Share link copied to clipboard");
-      });
+      if (gameConfig.isHost) {
+        navigator.clipboard.writeText(joinURL).then(() => {
+          setToastMessage("Share link copied to clipboard");
+        });
+      }
     },
-    [gameConfig]
+    [gameConfig, joinURL]
   );
 
   const handleFormChange = useCallback(
