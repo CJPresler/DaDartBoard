@@ -17,7 +17,6 @@ import {
   tableCellClasses,
   ButtonGroup,
   Grid,
-  ListItem,
   Container,
   Stack,
 } from "@mui/material";
@@ -36,7 +35,6 @@ import { CricketState } from "../Games/Cricket";
 import { ClientState } from "boardgame.io/dist/types/src/client/client";
 import Confetti from "react-confetti";
 import { Dartboard } from "../Components/Dartboard";
-import { fontSize } from "@mui/system";
 
 const getSectionIcon = (hitCount: number | undefined) => {
   if (hitCount === 0) {
@@ -70,14 +68,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:last-child td, &:last-child th": {
     border: 0,
   },
-}));
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
 }));
 
 interface CricketBoardProps {
