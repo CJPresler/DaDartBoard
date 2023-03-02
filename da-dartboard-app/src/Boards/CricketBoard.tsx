@@ -56,7 +56,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+    fontSize: '1vh',
   },
 }));
 
@@ -170,12 +170,12 @@ export const CricketBoard = (props: CricketBoardProps) => {
                     gameState.G.turn / gameState.ctx.numPlayers
                   )}`}</h3>
                 </div>
-                <Grid container justifyContent={"space-evenly"} style={{ fontWeight: 'bolder', fontSize: 25 }}>
+                <Grid container justifyContent={"space-evenly"} style={{ fontWeight: 'bolder', fontSize: '2.5vh' }}>
                   {Array.from(Array(3).keys()).map((i) => (
                     <Grid item>
                       {gameState?.G.players[gameState?.ctx.currentPlayer]
                         .dartThrows[0][i]?.ShortName ?
-                        <div style={{ height: 50 }}>{gameState?.G.players[gameState?.ctx.currentPlayer]
+                        <div style={{ height: 54 }}>{gameState?.G.players[gameState?.ctx.currentPlayer]
                           .dartThrows[0][i]?.ShortName}</div> : (
                           <Icon path={mdiArrowProjectile} size="40" />
                         )}
