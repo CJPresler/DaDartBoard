@@ -35,9 +35,9 @@ function createInitialState(numPlayers: number): CricketState {
   for (let i = 0; i < numPlayers; i++) {
     players[i.toString()] = {
       score: 0,
-      //sectionsHit: { 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0 },
+      sectionsHit: { 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0 },
       // Near victory start
-      sectionsHit: { 15: 3, 16: 3, 17: 3, 18: 3, 19: 3, 20: 3, 25: 0 },
+      // sectionsHit: { 15: 3, 16: 3, 17: 3, 18: 3, 19: 3, 20: 3, 25: 0 },
       dartThrows: [[]],
     };
   }
@@ -108,7 +108,7 @@ export const CricketGame: Game<CricketState> = {
 
           if (
             state.G.players[state.ctx.currentPlayer].sectionsHit[
-              section as CricketSegmentSections
+            section as CricketSegmentSections
             ] < 3
           ) {
             allSectionsClosed = false;

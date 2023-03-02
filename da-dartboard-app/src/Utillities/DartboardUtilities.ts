@@ -123,8 +123,8 @@ export interface Segment {
   Type: SegmentType;
   Section: SegmentSection;
   Value: number;
-  LongName: String;
-  ShortName: String;
+  LongName: string;
+  ShortName: string;
 }
 
 export const SegmentTypeToString = (type: SegmentType, shorthand: boolean) => {

@@ -10,7 +10,7 @@ import React, {
 import "./App.css";
 import { Client } from "boardgame.io/client";
 import { generateCredentials, P2P } from "@boardgame.io/p2p";
-import { Dartboard } from "./Boards/Dartboard";
+import { CricketBoard } from "./Boards/CricketBoard";
 import { CricketGame, CricketState } from "./Games/Cricket";
 import { CopyBtn } from "./Components/CopyBtn";
 import {
@@ -91,8 +91,8 @@ function App() {
           playerName: gameConfig.playerName
             ? gameConfig.playerName
             : gameConfig.isHost
-            ? "Host"
-            : "Guest",
+              ? "Host"
+              : "Guest",
           isHost: gameConfig.isHost,
           onError: (e) => {
             setError(e.type);
@@ -190,7 +190,7 @@ function App() {
         {client && (
           <div>
             <div className="game-frame">
-              <Dartboard client={client} />
+              <CricketBoard client={client} />
             </div>
             {error && (
               <p className="error">
