@@ -1,5 +1,4 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
-import { Ctx } from "boardgame.io";
 import { Client } from "boardgame.io/client";
 import {
   CreateSegment,
@@ -32,13 +31,7 @@ import {
 import { Granboard } from "../Utillities/Granboard";
 import { CricketState } from "../Games/Cricket";
 import { ClientState } from "boardgame.io/dist/types/src/client/client";
-
-const getWinner = (ctx?: Ctx): string | null => {
-  if (!ctx) return null;
-  if (!ctx.gameover) return null;
-  if (ctx.gameover.draw) return "Draw";
-  return `Player ${ctx.gameover.winningPlayerId} wins!`;
-};
+import Confetti from "react-confetti";
 
 const getSectionIcon = (hitCount: number | undefined) => {
   if (hitCount === 0) {
@@ -80,8 +73,6 @@ interface DartboardProps {
 
 export const Dartboard = (props: DartboardProps) => {
   const [gameState, setGameState] = useState<ClientState<CricketState>>();
-
-  let winner = getWinner(gameState?.ctx);
 
   const [granboard, setGranboard] = useState<Granboard>();
 
@@ -140,22 +131,28 @@ export const Dartboard = (props: DartboardProps) => {
       )}
       {props.client && props.client.playerID && gameState && (
         <Fragment>
-          <h3>
-            {winner
-              ? `${
-                  props.client.matchData?.at(parseInt(winner))?.name ??
-                  `Player ${winner}`
-                } Wins!`
-              : gameState?.isActive
-              ? "Your Turn"
-              : `${
-                  gameState?.ctx.currentPlayer
-                    ? props.client.matchData?.at(
-                        parseInt(gameState.ctx.currentPlayer)
-                      )?.name ?? "Oponnent"
-                    : "Oponnent"
-                }'s Turn`}
-          </h3>
+          {gameState.G.winner && (
+            <Fragment>
+              <Confetti />
+              <h3>{`${
+                props.client.matchData?.at(parseInt(gameState.G.winner))
+                  ?.name ?? `Player ${gameState.G.winner}`
+              } Wins!`}</h3>
+            </Fragment>
+          )}
+          {!gameState.G.winner && (
+            <h3>
+              {gameState?.isActive
+                ? "Your Turn"
+                : `${
+                    gameState?.ctx.currentPlayer
+                      ? props.client.matchData?.at(
+                          parseInt(gameState.ctx.currentPlayer)
+                        )?.name ?? "Oponnent"
+                      : "Oponnent"
+                  }'s Turn`}
+            </h3>
+          )}
 
           <TableContainer
             component={Paper}
@@ -201,9 +198,39 @@ export const Dartboard = (props: DartboardProps) => {
                 version="1.1"
                 x="0px"
                 y="0px"
-                viewBox="0 0 787 774"
+                viewBox="0 0 797 780"
                 enable-background="new 0 0 787 774"
               >
+                <filter
+                  id="sofGlow"
+                  height="300%"
+                  width="300%"
+                  x="-75%"
+                  y="-75%"
+                >
+                  <feMorphology
+                    operator="dilate"
+                    radius="4"
+                    in="SourceAlpha"
+                    result="thicken"
+                  />
+                  <feGaussianBlur
+                    in="thicken"
+                    stdDeviation="15"
+                    result="blurred"
+                  />
+                  <feFlood flood-color="rgb(0,186,255)" result="glowColor" />
+                  <feComposite
+                    in="glowColor"
+                    in2="blurred"
+                    operator="in"
+                    result="softGlow_colored"
+                  />
+                  <feMerge>
+                    <feMergeNode in="softGlow_colored" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
                 <g id="areas">
                   <g id="miss">
                     <circle
@@ -212,6 +239,14 @@ export const Dartboard = (props: DartboardProps) => {
                       cx="401.5"
                       cy="389"
                       r="385"
+                    />
+                    <circle
+                      id="activePlayerGlow"
+                      fill={boardColorDark}
+                      cx="401.5"
+                      cy="389"
+                      r="332"
+                      filter={gameState.isActive ? "url(#sofGlow)" : undefined}
                     />
                   </g>
                   <g id="s">
@@ -803,20 +838,32 @@ export const Dartboard = (props: DartboardProps) => {
               <h3
                 style={{ position: "absolute", top: -5, left: 0 }}
               >{`Round ${Math.ceil(
-                gameState.ctx.turn / gameState.ctx.numPlayers
+                gameState.G.turn / gameState.ctx.numPlayers
               )}`}</h3>
             </div>
           </div>
           <ButtonGroup variant="outlined" aria-label="outlined button group">
-            <Button
-              className="cta"
-              onClick={() => props.client?.events.endTurn?.()}
-            >
-              End Turn
-            </Button>
-            <Button className="cta" onClick={props.client.undo}>
-              Undo
-            </Button>
+            {gameState.G.winner && (
+              <Button
+                className="cta"
+                onClick={() => props.client?.moves.rematch?.()}
+              >
+                Rematch
+              </Button>
+            )}
+            {!gameState.G.winner && (
+              <Fragment>
+                <Button
+                  className="cta"
+                  onClick={() => props.client?.events.endTurn?.()}
+                >
+                  End Turn
+                </Button>
+                <Button className="cta" onClick={props.client.undo}>
+                  Undo
+                </Button>
+              </Fragment>
+            )}
           </ButtonGroup>
 
           <TableContainer

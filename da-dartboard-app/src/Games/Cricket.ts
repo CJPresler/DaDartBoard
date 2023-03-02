@@ -26,21 +26,29 @@ export interface Player {
 export interface CricketState {
   players: Record<string, Player>;
   lastHit: Segment | undefined;
+  turn: number;
+  winner?: string;
+}
+
+function createInitialState(numPlayers: number): CricketState {
+  const players: Record<string, Player> = {};
+  for (let i = 0; i < numPlayers; i++) {
+    players[i.toString()] = {
+      score: 0,
+      //sectionsHit: { 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0 },
+      // Near victory start
+      sectionsHit: { 15: 3, 16: 3, 17: 3, 18: 3, 19: 3, 20: 3, 25: 0 },
+      dartThrows: [[]],
+    };
+  }
+
+  return { players, lastHit: undefined, turn: 1 };
 }
 
 export const CricketGame: Game<CricketState> = {
   name: "Cricket_Darts",
   setup: (state) => {
-    const players: Record<string, Player> = {};
-    for (let i = 0; i < state.ctx.numPlayers; i++) {
-      players[i.toString()] = {
-        score: 0,
-        sectionsHit: { 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0 },
-        dartThrows: [[]],
-      };
-    }
-
-    return { players, lastHit: undefined };
+    return createInitialState(state.ctx.numPlayers);
   },
 
   moves: {
@@ -92,6 +100,45 @@ export const CricketGame: Game<CricketState> = {
         // Update the player state
         playerState.sectionsHit[section] = newHitCount;
         playerState.score += pointsEarned;
+
+        // Check for the game over condition
+        let allSectionsClosed = true;
+        for (let section = 15; section < 22; section++) {
+          section = section === 21 ? 25 : section;
+
+          if (
+            state.G.players[state.ctx.currentPlayer].sectionsHit[
+              section as CricketSegmentSections
+            ] < 3
+          ) {
+            allSectionsClosed = false;
+            break;
+          }
+        }
+
+        let hasHighestScore = true;
+        if (allSectionsClosed) {
+          for (let i = 0; i < state.ctx.numPlayers; i++) {
+            if (i.toString() === state.ctx.currentPlayer) {
+              // Ignore the current player
+              continue;
+            }
+
+            // If any other player has a higher score then the current player does not have the highest score
+            if (
+              state.G.players[i.toString()].score >
+              state.G.players[state.ctx.currentPlayer].score
+            ) {
+              hasHighestScore = false;
+              break;
+            }
+          }
+        }
+
+        if (allSectionsClosed && hasHighestScore) {
+          state.G.winner = state.ctx.currentPlayer;
+          state.events.setActivePlayers({ all: "gameOver" });
+        }
       },
       undoable: true,
     },
@@ -113,46 +160,29 @@ export const CricketGame: Game<CricketState> = {
 
       // Reset the lastHit
       state.G.lastHit = undefined;
+
+      // Rev the turn count
+      state.G.turn++;
     },
-  },
 
-  endIf: (state) => {
-    let allSectionsClosed = true;
-    for (let section = 15; section < 22; section++) {
-      section = section === 21 ? 25 : section;
+    stages: {
+      gameOver: {
+        moves: {
+          rematch: (state) => {
+            // Reset the game state values to their initial values (you can't replace the whole state object)
+            Object.assign(state.G, createInitialState(state.ctx.numPlayers));
+            // winner is underfined initially so it needs to be manually reset
+            state.G.winner = undefined;
 
-      if (
-        state.G.players[state.ctx.currentPlayer].sectionsHit[
-          section as CricketSegmentSections
-        ] < 3
-      ) {
-        allSectionsClosed = false;
-        break;
-      }
-    }
+            // reduce the turn count by one, as the next endTurn will bump it by one
+            state.G.turn = 0;
 
-    let hasHighestScore = true;
-    if (allSectionsClosed) {
-      for (let i = 0; i < state.ctx.numPlayers; i++) {
-        if (i.toString() === state.ctx.currentPlayer) {
-          // Ignore the current player
-          continue;
-        }
-
-        // If any other player has a higher score then the current player does not have the highest score
-        if (
-          state.G.players[i.toString()].score >
-          state.G.players[state.ctx.currentPlayer].score
-        ) {
-          hasHighestScore = false;
-          break;
-        }
-      }
-    }
-
-    // The game ends if the player has all sections closed and has the highest (or tied) score
-    return allSectionsClosed && hasHighestScore
-      ? { winningPlayerId: state.ctx.currentPlayer }
-      : undefined;
+            // Set the first player as the active player not in any stage
+            state.events.endTurn({ next: "0" });
+            state.events.setActivePlayers([]);
+          },
+        },
+      },
+    },
   },
 };
