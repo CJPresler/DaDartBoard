@@ -55,9 +55,9 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: "1.5vh",
   },
-  padding: "10px",
-  [theme.breakpoints.up("md")]: {
-    padding: undefined,
+  padding: "5px",
+  [theme.breakpoints.up("sm")]: {
+    padding: "10px",
   },
 }));
 
@@ -233,28 +233,24 @@ export const CricketBoard = (props: CricketBoardProps) => {
                 </Container>
               </Grid>
               <Grid item xs={12} lg={6}>
-                <Container maxWidth="md">
-                  <TableContainer component={Paper}>
-                    <Table>
-                      <TableHead>
-                        <StyledTableRow>
-                          <StyledTableCell></StyledTableCell>
-                          <StyledTableCell align="center">15</StyledTableCell>
-                          <StyledTableCell align="center">16</StyledTableCell>
-                          <StyledTableCell align="center">17</StyledTableCell>
-                          <StyledTableCell align="center">18</StyledTableCell>
-                          <StyledTableCell align="center">19</StyledTableCell>
-                          <StyledTableCell align="center">20</StyledTableCell>
-                          <StyledTableCell align="center">Bull</StyledTableCell>
-                          <StyledTableCell align="center">
-                            Score
-                          </StyledTableCell>
-                        </StyledTableRow>
-                      </TableHead>
-                      <TableBody>
-                        {Array.from(
-                          Array(gameState?.ctx.numPlayers).keys()
-                        ).map((row) => (
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <StyledTableRow>
+                        <StyledTableCell></StyledTableCell>
+                        <StyledTableCell align="center">15</StyledTableCell>
+                        <StyledTableCell align="center">16</StyledTableCell>
+                        <StyledTableCell align="center">17</StyledTableCell>
+                        <StyledTableCell align="center">18</StyledTableCell>
+                        <StyledTableCell align="center">19</StyledTableCell>
+                        <StyledTableCell align="center">20</StyledTableCell>
+                        <StyledTableCell align="center">Bull</StyledTableCell>
+                        <StyledTableCell align="center">Score</StyledTableCell>
+                      </StyledTableRow>
+                    </TableHead>
+                    <TableBody>
+                      {Array.from(Array(gameState?.ctx.numPlayers).keys()).map(
+                        (row) => (
                           <StyledTableRow
                             style={
                               gameState.ctx.currentPlayer === row.toString()
@@ -332,11 +328,11 @@ export const CricketBoard = (props: CricketBoardProps) => {
                               {gameState?.G.players[row.toString()].score}
                             </StyledTableCell>
                           </StyledTableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Container>
+                        )
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               </Grid>
             </Grid>
           </Fragment>
