@@ -3,8 +3,8 @@ import React, {
   FormEvent,
   Fragment,
   useCallback,
-  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import "./App.css";
@@ -60,40 +60,57 @@ function App() {
     [gameConfig]
   );
   const [error, setError] = useState<null | string>(null);
+  const [addPlayer, setAddPlayer] = useState(false);
 
-  const [client, setClient] =
+  const [activeClient, setActiveClient] =
     useState<ReturnType<typeof Client<CricketState>>>();
 
+  const clients = useRef<ReturnType<typeof Client<CricketState>>[]>([]);
+
   // Manage the client
-  useEffect(() => {
-    if (client) {
-      return () => {
-        client.stop();
-      };
+  const switchToActiveClient = useCallback(() => {
+    if (!activeClient && clients.current.length > 0) {
+      setActiveClient(clients.current[0]);
+      return;
     }
-  }, [client]);
+
+    if (activeClient && !activeClient.getState()?.isActive) {
+      // This client isn't active check all registered clients and swap if one is active
+      clients.current.every((client) => {
+        if (client.playerID === activeClient.getState()?.ctx.currentPlayer) {
+          setActiveClient(client);
+
+          // Break early as we found the next client
+          return false;
+        }
+
+        // Keep searching
+        return true;
+      });
+    }
+  }, [activeClient]);
 
   const handleFormSubmission = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      if (gameConfig.playerName) {
+      if (gameConfig.playerName && !addPlayer) {
         window.localStorage.setItem("playerName", gameConfig.playerName);
       }
 
       const client = AutoJoinClient<CricketState>({
         game: CricketGame,
         numPlayers: gameConfig.numPlayers,
-        playerID: gameConfig.isHost ? "0" : undefined,
+        playerID: gameConfig.isHost && !addPlayer ? "0" : undefined,
         matchID: gameConfig.matchID,
         credentials,
         multiplayer: P2P({
           playerName: gameConfig.playerName
             ? gameConfig.playerName
-            : gameConfig.isHost
+            : gameConfig.isHost && !addPlayer
               ? "Host"
               : "Guest",
-          isHost: gameConfig.isHost,
+          isHost: gameConfig.isHost && !addPlayer,
           onError: (e) => {
             setError(e.type);
           },
@@ -103,15 +120,17 @@ function App() {
 
       client.start();
 
-      setClient(client);
+      clients.current.push(client);
+      switchToActiveClient();
+      setAddPlayer(false);
 
-      if (gameConfig.isHost) {
+      if (gameConfig.isHost && !addPlayer) {
         navigator.clipboard.writeText(joinURL).then(() => {
           setToastMessage("Share link copied to clipboard");
         });
       }
     },
-    [gameConfig, joinURL]
+    [gameConfig, joinURL, addPlayer, switchToActiveClient]
   );
 
   const handleFormChange = useCallback(
@@ -129,7 +148,7 @@ function App() {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <div className="App">
-        {!client && (
+        {(!activeClient || addPlayer) && (
           <Box
             sx={{
               marginTop: 8,
@@ -149,14 +168,14 @@ function App() {
             >
               <TextField
                 margin="normal"
-                defaultValue={gameConfig.playerName}
+                defaultValue={!addPlayer ? gameConfig.playerName : ""}
                 onChange={(e) => handleFormChange(e)}
                 fullWidth
                 label="Name"
                 name="playerName"
                 autoFocus
               />
-              {gameConfig.isHost && (
+              {gameConfig.isHost && !addPlayer && (
                 <Fragment>
                   <InputLabel id="numPlayerLabel">Number of Players</InputLabel>
                   <Select
@@ -182,15 +201,15 @@ function App() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                {gameConfig.isHost ? "Create game" : "Join game"}
+                {gameConfig.isHost && !addPlayer ? "Create game" : "Join game"}
               </Button>
             </Box>
           </Box>
         )}
-        {client && (
+        {activeClient && !addPlayer && (
           <div>
             <div className="game-frame">
-              <CricketBoard client={client} />
+              <CricketBoard client={activeClient} gameStateChanged={switchToActiveClient} />
             </div>
             {error && (
               <p className="error">
@@ -198,6 +217,7 @@ function App() {
               </p>
             )}
             <CopyBtn value={joinURL}>Copy share URL</CopyBtn>
+            <Button type="button" onClick={() => setAddPlayer(true)}>Add local player</Button>
             {gameConfig.isHost && <p>You are the host</p>}
           </div>
         )}

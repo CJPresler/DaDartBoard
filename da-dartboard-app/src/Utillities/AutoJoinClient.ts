@@ -12,7 +12,15 @@ export const AutoJoinClient = <G>(
     return client;
   }
 
-  const unsubscribe = client.subscribe((state) => {
+  let hasCheckedSeats = false;
+
+  /*const unsubscribe = */client.subscribe((state) => {
+    if (hasCheckedSeats) {
+      // Don't unsubscibe due to this GitHub issue: https://github.com/boardgameio/boardgame.io/issues/1137
+      // Just no-op all future calls
+      return;
+    }
+
     // Wait for a non-null state update indicating the connection is live
     if (state && client.matchData) {
       // check for available seats
@@ -24,7 +32,9 @@ export const AutoJoinClient = <G>(
       });
 
       // Unsubscribe no matter what
-      unsubscribe();
+      // Don't unsubscibe due to this GitHub issue: https://github.com/boardgameio/boardgame.io/issues/1137
+      // unsubscribe();
+      hasCheckedSeats = true;
 
       client.overrideGameState(null);
 
