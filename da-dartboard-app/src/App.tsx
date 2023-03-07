@@ -10,7 +10,7 @@ import React, {
 import "./App.css";
 import { Client } from "boardgame.io/client";
 import { generateCredentials, P2P } from "@boardgame.io/p2p";
-import { CricketBoard } from "./Boards/CricketBoard";
+import { DartsGame, SupportedGameTypes } from "./Boards/DartsGame";
 import { CricketGame, CricketState } from "./Games/Cricket";
 import { CopyBtn } from "./Components/CopyBtn";
 import {
@@ -29,6 +29,8 @@ import {
   Alert,
 } from "@mui/material";
 import { AutoJoinClient } from "./Utillities/AutoJoinClient";
+import { Standard01Game } from "./Games/Standard01";
+import { _ClientImpl } from "boardgame.io/dist/types/src/client/client";
 
 // Request to keep the device alive so the game doesn't disconnect
 (navigator as any)?.wakeLock.request();
@@ -37,7 +39,16 @@ const queryParameters = new URLSearchParams(window.location.search);
 const uuid = () => Math.round(Math.random() * 1e16).toString(32);
 const credentials = generateCredentials();
 
-const gameConfigDefaultValues = {
+type GameConfig = {
+  gameType: SupportedGameTypes;
+  matchID: string;
+  isHost: boolean;
+  playerName: string | null;
+  numPlayers: number;
+};
+
+const gameConfigDefaultValues: GameConfig = {
+  gameType: SupportedGameTypes.Cricket,
   matchID: queryParameters.get("matchID") ?? uuid(),
   isHost: !queryParameters.get("matchID"),
   playerName: window.localStorage.getItem("playerName"),
@@ -62,10 +73,9 @@ function App() {
   const [error, setError] = useState<null | string>(null);
   const [addPlayer, setAddPlayer] = useState(false);
 
-  const [activeClient, setActiveClient] =
-    useState<ReturnType<typeof Client<CricketState>>>();
+  const [activeClient, setActiveClient] = useState<_ClientImpl<any>>();
 
-  const clients = useRef<ReturnType<typeof Client<CricketState>>[]>([]);
+  const clients = useRef<_ClientImpl<any>[]>([]);
 
   // Manage the client
   const switchToActiveClient = useCallback(() => {
@@ -98,8 +108,9 @@ function App() {
         window.localStorage.setItem("playerName", gameConfig.playerName);
       }
 
-      const client = AutoJoinClient<CricketState>({
-        game: CricketGame,
+      const client = AutoJoinClient<any>({
+        game:
+          gameConfig.gameType === "Cricket" ? CricketGame : Standard01Game(501),
         numPlayers: gameConfig.numPlayers,
         playerID: gameConfig.isHost && !addPlayer ? "0" : undefined,
         matchID: gameConfig.matchID,
@@ -108,8 +119,8 @@ function App() {
           playerName: gameConfig.playerName
             ? gameConfig.playerName
             : gameConfig.isHost && !addPlayer
-              ? "Host"
-              : "Guest",
+            ? "Host"
+            : "Guest",
           isHost: gameConfig.isHost && !addPlayer,
           onError: (e) => {
             setError(e.type);
@@ -193,6 +204,18 @@ function App() {
                     <MenuItem value={5}>5</MenuItem>
                     <MenuItem value={6}>6</MenuItem>
                   </Select>
+                  <InputLabel id="gameTypeLabel">Game Type</InputLabel>
+                  <Select
+                    name="gameType"
+                    value={gameConfig.gameType}
+                    label="Game Type"
+                    labelId="gameType"
+                    onChange={handleFormChange}
+                    fullWidth
+                  >
+                    <MenuItem value={"Cricket"}>Cricket</MenuItem>
+                    <MenuItem value={"Standard01"}>Standard01</MenuItem>
+                  </Select>
                 </Fragment>
               )}
               <Button
@@ -209,7 +232,11 @@ function App() {
         {activeClient && !addPlayer && (
           <div>
             <div className="game-frame">
-              <CricketBoard client={activeClient} gameStateChanged={switchToActiveClient} />
+              <DartsGame
+                gameType={gameConfig.gameType}
+                client={activeClient as ReturnType<typeof Client<CricketState>>}
+                gameStateChanged={switchToActiveClient}
+              />
             </div>
             {error && (
               <p className="error">
@@ -217,7 +244,9 @@ function App() {
               </p>
             )}
             <CopyBtn value={joinURL}>Copy share URL</CopyBtn>
-            <Button type="button" onClick={() => setAddPlayer(true)}>Add local player</Button>
+            <Button type="button" onClick={() => setAddPlayer(true)}>
+              Add local player
+            </Button>
             {gameConfig.isHost && <p>You are the host</p>}
           </div>
         )}

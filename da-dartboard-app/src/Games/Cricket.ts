@@ -1,11 +1,12 @@
 import { Game } from "boardgame.io";
 import { INVALID_MOVE } from "boardgame.io/core";
+import { Segment, SegmentSection } from "../Utillities/DartboardUtilities";
 import {
-  CreateSegment,
-  Segment,
-  SegmentID,
-  SegmentSection,
-} from "../Utillities/DartboardUtilities";
+  commonDartHit,
+  CommonGameState,
+  CommonPlayerData,
+  commonTurn,
+} from "./CommonGameLogic";
 
 type CricketSegmentSections =
   | SegmentSection.Fifteen
@@ -16,19 +17,13 @@ type CricketSegmentSections =
   | SegmentSection.Twenty
   | SegmentSection.BULL;
 // Data that is specific to a player
-export interface Player {
+export interface Player extends CommonPlayerData {
   score: number;
   sectionsHit: Record<CricketSegmentSections, number>;
-  dartThrows: Segment[][]; // Dart throws per turn
 }
 
 // Overall game state
-export interface CricketState {
-  players: Record<string, Player>;
-  lastHit: Segment | undefined;
-  turn: number;
-  winner?: string;
-}
+export interface CricketState extends CommonGameState<Player> {}
 
 function createInitialState(numPlayers: number): CricketState {
   const players: Record<string, Player> = {};
@@ -59,11 +54,7 @@ export const CricketGame: Game<CricketState> = {
           return INVALID_MOVE;
         }
 
-        // Record the throw as long as it was a valid segment
-        if (segment.Section <= 25) {
-          state.G.players[state.ctx.currentPlayer].dartThrows[0].push(segment);
-          state.G.lastHit = segment;
-        }
+        commonDartHit(state, segment);
 
         // In Cricket we don't care about any segments below 15, and anything above 21 is invalid
         if (segment.Section < 15 || segment.Section > 25) {
@@ -108,7 +99,7 @@ export const CricketGame: Game<CricketState> = {
 
           if (
             state.G.players[state.ctx.currentPlayer].sectionsHit[
-            section as CricketSegmentSections
+              section as CricketSegmentSections
             ] < 3
           ) {
             allSectionsClosed = false;
@@ -145,44 +136,6 @@ export const CricketGame: Game<CricketState> = {
   },
 
   turn: {
-    minMoves: 0,
-    onEnd: (state) => {
-      // update the player dartThrows
-      const playerData = state.G.players[state.ctx.currentPlayer];
-
-      // Add misses for any throws not registered by the end of the turn
-      for (let i = playerData.dartThrows[0].length; i < 3; i++) {
-        playerData.dartThrows[0].push(CreateSegment(SegmentID.MISS));
-      }
-
-      // New up a new array for current throws and insert it at the beginning
-      playerData.dartThrows = [[], ...playerData.dartThrows];
-
-      // Reset the lastHit
-      state.G.lastHit = undefined;
-
-      // Rev the turn count
-      state.G.turn++;
-    },
-
-    stages: {
-      gameOver: {
-        moves: {
-          rematch: (state) => {
-            // Reset the game state values to their initial values (you can't replace the whole state object)
-            Object.assign(state.G, createInitialState(state.ctx.numPlayers));
-            // winner is underfined initially so it needs to be manually reset
-            state.G.winner = undefined;
-
-            // reduce the turn count by one, as the next endTurn will bump it by one
-            state.G.turn = 0;
-
-            // Set the first player as the active player not in any stage
-            state.events.endTurn({ next: "0" });
-            state.events.setActivePlayers([]);
-          },
-        },
-      },
-    },
+    ...commonTurn<CricketState>(createInitialState),
   },
 };
