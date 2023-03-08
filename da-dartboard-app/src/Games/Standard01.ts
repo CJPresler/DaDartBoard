@@ -32,14 +32,14 @@ function createInitialState(
     };
   }
 
-  return { players, lastHit: undefined, turn: 1 };
+  return { gameType: "Standard01", players, lastHit: undefined, turn: 1 };
 }
 
 export const Standard01Game: (
   startingScore: number
 ) => Game<Standard01State> = (startingScore) => {
   return {
-    name: "Standard01_Darts",
+    name: "DaDartboardGames",
     setup: (state) => {
       return createInitialState(state.ctx.numPlayers, startingScore);
     },

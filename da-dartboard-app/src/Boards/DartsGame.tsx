@@ -28,30 +28,23 @@ const DartboardContainer = styled(Container)(({ theme }) => ({
   },
 }));
 
-export type SupportedGameStates =
-  | ClientState<CricketState>
-  | ClientState<Standard01State>;
-
 export enum SupportedGameTypes {
   Cricket = "Cricket",
   Standard01 = "Standard01",
 }
 
-interface DartsGamePropsBase {
+export type SupportedGameStates =
+  | ClientState<CricketState>
+  | ClientState<Standard01State>;
+
+export type SupportedClientTypes =
+  | ReturnType<typeof Client<CricketState>>
+  | ReturnType<typeof Client<Standard01State>>;
+
+interface DartsGameProps {
   gameStateChanged?: (state: ClientState<any>) => void;
+  client: SupportedClientTypes | undefined;
 }
-
-type DartsGamePropsCricket = DartsGamePropsBase & {
-  gameType: SupportedGameTypes.Cricket;
-  client: ReturnType<typeof Client<CricketState>> | undefined;
-};
-
-type DartsGamePropsStandard01 = DartsGamePropsBase & {
-  gameType: SupportedGameTypes.Standard01;
-  client: ReturnType<typeof Client<Standard01State>> | undefined;
-};
-
-type DartsGameProps = DartsGamePropsCricket | DartsGamePropsStandard01;
 
 export const DartsGame = (props: DartsGameProps) => {
   const [gameState, setGameState] = useState<SupportedGameStates>();
@@ -201,13 +194,13 @@ export const DartsGame = (props: DartsGameProps) => {
                   </ButtonGroup>
                 </Container>
               </Grid>
-              {props.gameType === SupportedGameTypes.Cricket && (
+              {gameState.G.gameType === "Cricket" && (
                 <CricketScoreboard
                   gameState={gameState as ClientState<CricketState>}
                   client={props.client}
                 />
               )}
-              {props.gameType === SupportedGameTypes.Standard01 && (
+              {gameState.G.gameType === "Standard01" && (
                 <Standard01Scoreboard
                   gameState={gameState as ClientState<Standard01State>}
                   client={props.client}

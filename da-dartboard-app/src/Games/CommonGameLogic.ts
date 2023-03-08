@@ -11,6 +11,7 @@ export interface CommonPlayerData {
 }
 
 export interface CommonGameState<PlayerDataType extends CommonPlayerData> {
+  gameType: "Cricket" | "Standard01";
   players: Record<string, PlayerDataType>;
   lastHit: Segment | undefined;
   turn: number;

@@ -8,10 +8,9 @@ import React, {
   useState,
 } from "react";
 import "./App.css";
-import { Client } from "boardgame.io/client";
 import { generateCredentials, P2P } from "@boardgame.io/p2p";
 import { DartsGame, SupportedGameTypes } from "./Boards/DartsGame";
-import { CricketGame, CricketState } from "./Games/Cricket";
+import { CricketGame } from "./Games/Cricket";
 import { CopyBtn } from "./Components/CopyBtn";
 import {
   ThemeProvider,
@@ -50,7 +49,7 @@ type GameConfig = {
 const gameConfigDefaultValues: GameConfig = {
   gameType: SupportedGameTypes.Cricket,
   matchID: queryParameters.get("matchID") ?? uuid(),
-  isHost: !queryParameters.get("matchID"),
+  isHost: !queryParameters.has("joinGame"),
   playerName: window.localStorage.getItem("playerName"),
   numPlayers: parseInt(window.localStorage.getItem("numPlayers") ?? "2"),
 };
@@ -67,7 +66,7 @@ function App() {
 
   const joinURL = useMemo(
     () =>
-      `${window.location.origin}${window.location.pathname}?matchID=${gameConfig.matchID}`,
+      `${window.location.origin}${window.location.pathname}?matchID=${gameConfig.matchID}&joinGame`,
     [gameConfig]
   );
   const [error, setError] = useState<null | string>(null);
@@ -140,6 +139,14 @@ function App() {
           setToastMessage("Share link copied to clipboard");
         });
       }
+
+      window.history.replaceState(
+        {},
+        "",
+        `${window.location.origin}${window.location.pathname}?matchID=${
+          gameConfig.matchID
+        }${gameConfig.isHost ? "" : "&joinGame"}`
+      );
     },
     [gameConfig, joinURL, addPlayer, switchToActiveClient]
   );
@@ -186,6 +193,17 @@ function App() {
                 name="playerName"
                 autoFocus
               />
+              {!addPlayer && (
+                <TextField
+                  margin="normal"
+                  defaultValue={gameConfig.matchID}
+                  onChange={(e) => handleFormChange(e)}
+                  fullWidth
+                  label="Match ID"
+                  name="matchID"
+                  autoFocus
+                />
+              )}
               {gameConfig.isHost && !addPlayer && (
                 <Fragment>
                   <InputLabel id="numPlayerLabel">Number of Players</InputLabel>
@@ -233,8 +251,7 @@ function App() {
           <div>
             <div className="game-frame">
               <DartsGame
-                gameType={gameConfig.gameType}
-                client={activeClient as ReturnType<typeof Client<CricketState>>}
+                client={activeClient}
                 gameStateChanged={switchToActiveClient}
               />
             </div>

@@ -37,11 +37,11 @@ function createInitialState(numPlayers: number): CricketState {
     };
   }
 
-  return { players, lastHit: undefined, turn: 1 };
+  return { gameType: "Cricket", players, lastHit: undefined, turn: 1 };
 }
 
 export const CricketGame: Game<CricketState> = {
-  name: "Cricket_Darts",
+  name: "DaDartboardGames",
   setup: (state) => {
     return createInitialState(state.ctx.numPlayers);
   },
