@@ -9,7 +9,6 @@ import {
   Grid,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
 } from "@mui/material";
 import { Client, ClientState } from "boardgame.io/dist/types/src/client/client";
