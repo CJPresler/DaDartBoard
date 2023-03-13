@@ -3,6 +3,8 @@ import Icon from "@mdi/react";
 import {
   Box,
   Button,
+  Card,
+  CardContent,
   FormControl,
   Grid,
   InputLabel,
@@ -20,7 +22,7 @@ export const GameConfig: FunctionComponent<{
 }> = (props) => {
   return (
     <Grid container item xs={12} lg={6}>
-      <Grid container item xs={12} component={Paper}>
+      <Grid container item xs={12} columnSpacing={2} rowSpacing={2}>
         <Grid item xs={12}>
           <h2>Players</h2>
         </Grid>
@@ -28,18 +30,22 @@ export const GameConfig: FunctionComponent<{
           ?.filter((matchData) => matchData.isConnected)
           .map((matchData) => (
             <Grid item xs={3}>
-              <Icon
-                path={mdiAccount}
-                style={{
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  marginRight: 5,
-                }}
-                size="50"
-              />
-              <h2>
-                {matchData.name ? matchData.name : `Player ${matchData.id}`}
-              </h2>
+              <Card elevation={2}>
+                <CardContent>
+                  <Icon
+                    path={mdiAccount}
+                    style={{
+                      display: "inline-block",
+                      verticalAlign: "middle",
+                      marginRight: 5,
+                    }}
+                    size="50"
+                  />
+                  <h2>
+                    {matchData.name ? matchData.name : `Player ${matchData.id}`}
+                  </h2>
+                </CardContent>
+              </Card>
             </Grid>
           ))}
       </Grid>
