@@ -82,11 +82,17 @@ export const CricketScoreboard: FunctionComponent<{
             </StyledTableRow>
           </TableHead>
           <TableBody>
-            {Array.from(Array(props.gameState?.ctx.numPlayers).keys()).map(
-              (row) => (
+            {props.client.matchData
+              ?.filter((matchData) =>
+                props.gameState.G.gameConfig.playOrder.includes(
+                  matchData.id.toString()
+                )
+              )
+              .map((matchData) => (
                 <StyledTableRow
                   style={
-                    props.gameState?.ctx.currentPlayer === row.toString()
+                    props.gameState?.ctx.currentPlayer ===
+                    matchData.id.toString()
                       ? {
                           boxShadow: "inset 0px 0px 35px -7px #00BAFF",
                         }
@@ -94,7 +100,7 @@ export const CricketScoreboard: FunctionComponent<{
                   }
                 >
                   <StyledTableCell component="th" scope="row">
-                    {!props.client?.matchData?.at(row)?.isConnected && (
+                    {!matchData.isConnected && (
                       <Icon
                         path={mdiLanDisconnect}
                         style={{
@@ -106,61 +112,66 @@ export const CricketScoreboard: FunctionComponent<{
                         color="#ED3737"
                       />
                     )}
-                    {props.client?.matchData?.at(row)?.name
-                      ? props.client?.matchData?.at(row)?.name
-                      : `Player ${row + 1}`}
+                    {matchData.name ? matchData.name : `Player ${matchData.id}`}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.phaseData?.playerData[row.toString()]
-                        .sectionsHit[15]
+                      props.gameState?.G.phaseData?.playerData[
+                        matchData.id.toString()
+                      ].sectionsHit[15]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.phaseData?.playerData[row.toString()]
-                        .sectionsHit[16]
+                      props.gameState?.G.phaseData?.playerData[
+                        matchData.id.toString()
+                      ].sectionsHit[16]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.phaseData?.playerData[row.toString()]
-                        .sectionsHit[17]
+                      props.gameState?.G.phaseData?.playerData[
+                        matchData.id.toString()
+                      ].sectionsHit[17]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.phaseData?.playerData[row.toString()]
-                        .sectionsHit[18]
+                      props.gameState?.G.phaseData?.playerData[
+                        matchData.id.toString()
+                      ].sectionsHit[18]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.phaseData?.playerData[row.toString()]
-                        .sectionsHit[19]
+                      props.gameState?.G.phaseData?.playerData[
+                        matchData.id.toString()
+                      ].sectionsHit[19]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.phaseData?.playerData[row.toString()]
-                        .sectionsHit[20]
+                      props.gameState?.G.phaseData?.playerData[
+                        matchData.id.toString()
+                      ].sectionsHit[20]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.phaseData?.playerData[row.toString()]
-                        .sectionsHit[25]
+                      props.gameState?.G.phaseData?.playerData[
+                        matchData.id.toString()
+                      ].sectionsHit[25]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center" sx={{ fontWeight: "bold" }}>
                     {
-                      props.gameState?.G.phaseData?.playerData[row.toString()]
-                        .score
+                      props.gameState?.G.phaseData?.playerData[
+                        matchData.id.toString()
+                      ].score
                     }
                   </StyledTableCell>
                 </StyledTableRow>
-              )
-            )}
+              ))}
           </TableBody>
         </Table>
       </TableContainer>

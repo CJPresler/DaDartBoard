@@ -1,4 +1,5 @@
-import { PhaseMap } from "boardgame.io";
+import { FilteredMetadata, PhaseMap } from "boardgame.io";
+import { TurnOrder } from "boardgame.io/core";
 import { DartsGameState } from "../DartsGame";
 import {
   DartsGamePhases,
@@ -13,6 +14,7 @@ export const gameConfigPhase: PhaseMap<DartsGameState> = {
       return state.G.gameType;
     },
     turn: {
+      order: TurnOrder.RESET,
       activePlayers: { all: "allPlay" },
     },
     onBegin: (state) => {
@@ -20,7 +22,12 @@ export const gameConfigPhase: PhaseMap<DartsGameState> = {
     },
     moves: {
       start: {
-        move: (state) => {
+        move: (state, matchData: FilteredMetadata) => {
+          // Only put the connected players into the game
+          state.G.gameConfig.playOrder = matchData
+            .filter((seat) => seat.isConnected)
+            .map((seat) => String(seat.id));
+
           state.events.endPhase();
         },
       },

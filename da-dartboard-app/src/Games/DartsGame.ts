@@ -3,7 +3,11 @@ import { Segment } from "../Utillities/DartboardUtilities";
 import { cricketPhase, CricketPhaseData } from "./Phases/CricketPhase";
 import { gameConfigPhase } from "./Phases/GameConfigPhase";
 import { gameOverPhase } from "./Phases/GameOverPhase";
-import { standard01Phase, Standard01PhaseData } from "./Phases/Standard01Phase";
+import {
+  Standard01GameConfig,
+  standard01Phase,
+  Standard01PhaseData,
+} from "./Phases/Standard01Phase";
 import {
   DartsGamePhases,
   DartsGameTypes,
@@ -14,10 +18,15 @@ export interface PlayerData {
   dartThrows: Segment[][]; // Dart throws per turn
 }
 
+export interface DartsGameConfig {
+  playOrder: string[];
+}
+
 interface DartsGameBaseState {
   gamePhase: DartsGamePhases;
   gameType: DartsGameTypes;
   phaseData?: unknown;
+  gameConfig: DartsGameConfig;
   commonPlayerData: Record<string, PlayerData>;
   lastHit: Segment | undefined;
   turn: number;
@@ -32,6 +41,7 @@ export interface DartsGameCricketState extends DartsGameBaseState {
 export interface DartsGameStandard01State extends DartsGameBaseState {
   gameType: DartsGameTypes.Standard01;
   phaseData?: Standard01PhaseData;
+  gameConfig: Standard01GameConfig;
 }
 
 export type DartsGameState = DartsGameCricketState | DartsGameStandard01State;
@@ -48,6 +58,7 @@ export function createInitialState(numPlayers: number): DartsGameState {
   return {
     gamePhase: DartsGamePhases.GameConfig,
     gameType: DartsGameTypes.Cricket,
+    gameConfig: { playOrder: ["0"] },
     commonPlayerData: players,
     lastHit: undefined,
     turn: 1,

@@ -30,7 +30,10 @@ export interface CricketPhaseData {
 export const cricketPhase: PhaseMap<DartsGameState> = {
   [DartsGameTypes.Cricket]: {
     turn: {
-      order: TurnOrder.RESET,
+      order: {
+        ...TurnOrder.RESET,
+        playOrder: (context) => context.G.gameConfig.playOrder,
+      },
       onEnd: commonTurnEnd,
     },
     next: DartsGamePhases.GameOver,
@@ -39,14 +42,14 @@ export const cricketPhase: PhaseMap<DartsGameState> = {
       state.G.gameType = DartsGameTypes.Cricket;
 
       const playerData: Record<string, CricketPlayerData> = {};
-      for (let i = 0; i < state.ctx.numPlayers; i++) {
-        playerData[i.toString()] = {
+      state.G.gameConfig.playOrder.forEach((playerID) => {
+        playerData[playerID] = {
           score: 0,
           sectionsHit: { 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0 },
           // Near victory start
           // sectionsHit: { 15: 3, 16: 3, 17: 3, 18: 3, 19: 3, 20: 3, 25: 0 },
         };
-      }
+      });
 
       state.G.phaseData = { playerData };
     },
@@ -85,20 +88,24 @@ export const cricketPhase: PhaseMap<DartsGameState> = {
 
           // Check every other player to see if the section is still open
           let sectionIsClosed = true;
-          for (let i = 0; i < state.ctx.numPlayers; i++) {
-            if (i.toString() === state.ctx.currentPlayer) {
+
+          state.G.gameConfig.playOrder.forEach((playerID) => {
+            if (
+              playerID === state.ctx.currentPlayer ||
+              state.G.gameType !== DartsGameTypes.Cricket ||
+              !state.G.phaseData
+            ) {
               // Ignore the current player
-              continue;
+              return;
             }
 
             // If any player hasn't hit the section 3 or more times then it is not closed
             if (
-              state.G.phaseData.playerData[i.toString()].sectionsHit[section] <
-              3
+              state.G.phaseData.playerData[playerID].sectionsHit[section] < 3
             ) {
               sectionIsClosed = false;
             }
-          }
+          });
 
           const pointsEarned =
             sectionIsClosed || newHitCount < 3
@@ -126,21 +133,28 @@ export const cricketPhase: PhaseMap<DartsGameState> = {
 
           let hasHighestScore = true;
           if (allSectionsClosed) {
-            for (let i = 0; i < state.ctx.numPlayers; i++) {
-              if (i.toString() === state.ctx.currentPlayer) {
+            state.G.gameConfig.playOrder.every((playerID) => {
+              if (
+                playerID === state.ctx.currentPlayer ||
+                state.G.gameType !== DartsGameTypes.Cricket ||
+                !state.G.phaseData
+              ) {
                 // Ignore the current player
-                continue;
+                return true;
               }
 
               // If any other player has a higher score then the current player does not have the highest score
               if (
-                state.G.phaseData.playerData[i.toString()].score >
+                state.G.phaseData.playerData[playerID].score >
                 state.G.phaseData.playerData[state.ctx.currentPlayer].score
               ) {
                 hasHighestScore = false;
-                break;
+                return false;
               }
-            }
+
+              // Keep iterating
+              return true;
+            });
           }
 
           if (allSectionsClosed && hasHighestScore) {

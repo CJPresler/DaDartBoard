@@ -137,7 +137,7 @@ export const DartsGameBoard = (props: DartsGameProps) => {
                   <h3
                     style={{ position: "absolute", top: -5, left: 0 }}
                   >{`Round ${Math.ceil(
-                    gameState.G.turn / gameState.ctx.numPlayers
+                    gameState.G.turn / gameState.G.gameConfig.playOrder.length
                   )}`}</h3>
                   <Grid
                     container

@@ -12,40 +12,48 @@ export const Standard01Scoreboard: FunctionComponent<{
 }> = (props) => {
   return (
     <Grid container item xs={12} lg={6}>
-      {Array.from(Array(props.gameState?.ctx.numPlayers).keys()).map((row) => (
-        <Grid
-          item
-          xs={6}
-          style={
-            props.gameState?.ctx.currentPlayer === row.toString()
-              ? {
-                  boxShadow: "inset 0px 0px 35px -7px #00BAFF",
-                }
-              : undefined
-          }
-        >
-          {!props.client?.matchData?.at(row)?.isConnected && (
-            <Icon
-              path={mdiLanDisconnect}
-              style={{
-                display: "inline-block",
-                verticalAlign: "middle",
-                marginRight: 5,
-              }}
-              size={1}
-              color="#ED3737"
-            />
-          )}
-          <h2>
-            {props.client?.matchData?.at(row)?.name
-              ? props.client?.matchData?.at(row)?.name
-              : `Player ${row + 1}`}
-          </h2>
-          <h2>
-            {props.gameState?.G.phaseData?.playerData[row.toString()].score}
-          </h2>
-        </Grid>
-      ))}
+      {props.client.matchData
+        ?.filter((matchData) =>
+          props.gameState.G.gameConfig.playOrder.includes(
+            matchData.id.toString()
+          )
+        )
+        .map((matchData) => (
+          <Grid
+            item
+            xs={6}
+            style={
+              props.gameState?.ctx.currentPlayer === matchData.id.toString()
+                ? {
+                    boxShadow: "inset 0px 0px 35px -7px #00BAFF",
+                  }
+                : undefined
+            }
+          >
+            {!matchData.isConnected && (
+              <Icon
+                path={mdiLanDisconnect}
+                style={{
+                  display: "inline-block",
+                  verticalAlign: "middle",
+                  marginRight: 5,
+                }}
+                size={1}
+                color="#ED3737"
+              />
+            )}
+            <h2>
+              {matchData.name ? matchData.name : `Player ${matchData.id}`}
+            </h2>
+            <h2>
+              {
+                props.gameState?.G.phaseData?.playerData[
+                  matchData.id.toString()
+                ].score
+              }
+            </h2>
+          </Grid>
+        ))}
     </Grid>
   );
 };

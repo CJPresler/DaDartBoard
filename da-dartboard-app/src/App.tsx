@@ -18,13 +18,9 @@ import {
   TextField,
   Button,
   Box,
-  InputLabel,
-  Select,
-  MenuItem,
   SelectChangeEvent,
   Snackbar,
   Alert,
-  FormControl,
 } from "@mui/material";
 import { AutoJoinClient } from "./Utillities/AutoJoinClient";
 import { _ClientImpl } from "boardgame.io/dist/types/src/client/client";
@@ -39,16 +35,12 @@ const credentials = generateCredentials();
 
 type GameConfig = {
   matchID: string;
-  isHost: boolean;
   playerName: string | null;
-  numPlayers: number;
 };
 
 const gameConfigDefaultValues: GameConfig = {
   matchID: queryParameters.get("matchID") ?? uuid(),
-  isHost: !queryParameters.has("joinGame"),
   playerName: window.localStorage.getItem("playerName"),
-  numPlayers: parseInt(window.localStorage.getItem("numPlayers") ?? "2"),
 };
 
 const darkTheme = createTheme({
@@ -63,7 +55,7 @@ function App() {
 
   const joinURL = useMemo(
     () =>
-      `${window.location.origin}${window.location.pathname}?matchID=${gameConfig.matchID}&joinGame`,
+      `${window.location.origin}${window.location.pathname}?matchID=${gameConfig.matchID}`,
     [gameConfig]
   );
   const [error, setError] = useState<null | string>(null);
@@ -106,17 +98,12 @@ function App() {
 
       const client = AutoJoinClient<any>({
         game: DartsGame,
-        numPlayers: gameConfig.numPlayers,
-        playerID: gameConfig.isHost && !addPlayer ? "0" : undefined,
+        numPlayers: 8,
+        playerID: undefined,
         matchID: gameConfig.matchID,
         credentials,
         multiplayer: P2P({
-          playerName: gameConfig.playerName
-            ? gameConfig.playerName
-            : gameConfig.isHost && !addPlayer
-            ? "Host"
-            : "Guest",
-          isHost: gameConfig.isHost && !addPlayer,
+          playerName: gameConfig.playerName ?? undefined,
           onError: (e) => {
             setError(e.type);
           },
@@ -130,7 +117,7 @@ function App() {
       switchToActiveClient();
       setAddPlayer(false);
 
-      if (gameConfig.isHost && !addPlayer) {
+      if (!addPlayer) {
         navigator.clipboard.writeText(joinURL).then(() => {
           setToastMessage("Share link copied to clipboard");
         });
@@ -139,9 +126,7 @@ function App() {
       window.history.replaceState(
         {},
         "",
-        `${window.location.origin}${window.location.pathname}?matchID=${
-          gameConfig.matchID
-        }${gameConfig.isHost ? "" : "&joinGame"}`
+        `${window.location.origin}${window.location.pathname}?matchID=${gameConfig.matchID}`
       );
     },
     [gameConfig, joinURL, addPlayer, switchToActiveClient]
@@ -200,33 +185,13 @@ function App() {
                   autoFocus
                 />
               )}
-              {gameConfig.isHost && !addPlayer && (
-                <FormControl fullWidth sx={{ mt: 1 }}>
-                  <InputLabel id="numPlayerLabel">Number of Players</InputLabel>
-                  <Select
-                    name="numPlayers"
-                    value={gameConfig.numPlayers.toString()}
-                    label="Number of Players"
-                    labelId="numPlayerLabel"
-                    onChange={handleFormChange}
-                    fullWidth
-                  >
-                    <MenuItem value={1}>1</MenuItem>
-                    <MenuItem value={2}>2</MenuItem>
-                    <MenuItem value={3}>3</MenuItem>
-                    <MenuItem value={4}>4</MenuItem>
-                    <MenuItem value={5}>5</MenuItem>
-                    <MenuItem value={6}>6</MenuItem>
-                  </Select>
-                </FormControl>
-              )}
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                {gameConfig.isHost && !addPlayer ? "Create game" : "Join game"}
+                Connect to Game
               </Button>
             </Box>
           </Box>
@@ -248,7 +213,6 @@ function App() {
             <Button type="button" onClick={() => setAddPlayer(true)}>
               Add local player
             </Button>
-            {gameConfig.isHost && <p>You are the host</p>}
           </div>
         )}
       </div>
