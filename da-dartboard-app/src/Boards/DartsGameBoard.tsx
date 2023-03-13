@@ -103,15 +103,13 @@ export const DartsGameBoard = (props: DartsGameProps) => {
                 )}
                 {!gameState.G.winner && (
                   <h2>
-                    {gameState?.isActive
-                      ? "Your Turn"
-                      : `${
-                          gameState?.ctx.currentPlayer
-                            ? props.client.matchData?.at(
-                                parseInt(gameState.ctx.currentPlayer)
-                              )?.name ?? "Oponnent"
-                            : "Oponnent"
-                        }'s Turn`}
+                    {`${
+                      gameState?.ctx.currentPlayer
+                        ? props.client.matchData?.at(
+                            parseInt(gameState.ctx.currentPlayer)
+                          )?.name ?? "Oponnent"
+                        : "Oponnent"
+                    }'s Turn`}
                   </h2>
                 )}
 
