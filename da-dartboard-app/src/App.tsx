@@ -1,7 +1,6 @@
 import React, {
   ChangeEvent,
   FormEvent,
-  Fragment,
   useCallback,
   useMemo,
   useRef,
@@ -9,8 +8,7 @@ import React, {
 } from "react";
 import "./App.css";
 import { generateCredentials, P2P } from "@boardgame.io/p2p";
-import { DartsGame, SupportedGameTypes } from "./Boards/DartsGame";
-import { CricketGame } from "./Games/Cricket";
+import { DartsGameBoard } from "./Boards/DartsGameBoard";
 import { CopyBtn } from "./Components/CopyBtn";
 import {
   ThemeProvider,
@@ -26,10 +24,11 @@ import {
   SelectChangeEvent,
   Snackbar,
   Alert,
+  FormControl,
 } from "@mui/material";
 import { AutoJoinClient } from "./Utillities/AutoJoinClient";
-import { Standard01Game } from "./Games/Standard01";
 import { _ClientImpl } from "boardgame.io/dist/types/src/client/client";
+import { DartsGame } from "./Games/DartsGame";
 
 // Request to keep the device alive so the game doesn't disconnect
 (navigator as any)?.wakeLock.request();
@@ -39,7 +38,6 @@ const uuid = () => Math.round(Math.random() * 1e16).toString(32);
 const credentials = generateCredentials();
 
 type GameConfig = {
-  gameType: SupportedGameTypes;
   matchID: string;
   isHost: boolean;
   playerName: string | null;
@@ -47,7 +45,6 @@ type GameConfig = {
 };
 
 const gameConfigDefaultValues: GameConfig = {
-  gameType: SupportedGameTypes.Cricket,
   matchID: queryParameters.get("matchID") ?? uuid(),
   isHost: !queryParameters.has("joinGame"),
   playerName: window.localStorage.getItem("playerName"),
@@ -108,8 +105,7 @@ function App() {
       }
 
       const client = AutoJoinClient<any>({
-        game:
-          gameConfig.gameType === "Cricket" ? CricketGame : Standard01Game(501),
+        game: DartsGame,
         numPlayers: gameConfig.numPlayers,
         playerID: gameConfig.isHost && !addPlayer ? "0" : undefined,
         matchID: gameConfig.matchID,
@@ -205,7 +201,7 @@ function App() {
                 />
               )}
               {gameConfig.isHost && !addPlayer && (
-                <Fragment>
+                <FormControl fullWidth sx={{ mt: 1 }}>
                   <InputLabel id="numPlayerLabel">Number of Players</InputLabel>
                   <Select
                     name="numPlayers"
@@ -222,19 +218,7 @@ function App() {
                     <MenuItem value={5}>5</MenuItem>
                     <MenuItem value={6}>6</MenuItem>
                   </Select>
-                  <InputLabel id="gameTypeLabel">Game Type</InputLabel>
-                  <Select
-                    name="gameType"
-                    value={gameConfig.gameType}
-                    label="Game Type"
-                    labelId="gameType"
-                    onChange={handleFormChange}
-                    fullWidth
-                  >
-                    <MenuItem value={"Cricket"}>Cricket</MenuItem>
-                    <MenuItem value={"Standard01"}>Standard01</MenuItem>
-                  </Select>
-                </Fragment>
+                </FormControl>
               )}
               <Button
                 type="submit"
@@ -250,7 +234,7 @@ function App() {
         {activeClient && !addPlayer && (
           <div>
             <div className="game-frame">
-              <DartsGame
+              <DartsGameBoard
                 client={activeClient}
                 gameStateChanged={switchToActiveClient}
               />

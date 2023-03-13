@@ -1,12 +1,13 @@
 import { mdiLanDisconnect } from "@mdi/js";
 import Icon from "@mdi/react";
 import { Grid } from "@mui/material";
-import { Client, ClientState } from "boardgame.io/dist/types/src/client/client";
+import { State } from "boardgame.io";
+import { Client } from "boardgame.io/dist/types/src/client/client";
 import { FunctionComponent } from "react";
-import { Standard01State } from "../Games/Standard01";
+import { DartsGameStandard01State } from "../Games/DartsGame";
 
 export const Standard01Scoreboard: FunctionComponent<{
-  gameState: ClientState<Standard01State>;
+  gameState: State<DartsGameStandard01State>;
   client: ReturnType<typeof Client<any>>;
 }> = (props) => {
   return (
@@ -40,7 +41,9 @@ export const Standard01Scoreboard: FunctionComponent<{
               ? props.client?.matchData?.at(row)?.name
               : `Player ${row + 1}`}
           </h2>
-          <h2>{props.gameState?.G.players[row.toString()].score}</h2>
+          <h2>
+            {props.gameState?.G.phaseData?.playerData[row.toString()].score}
+          </h2>
         </Grid>
       ))}
     </Grid>

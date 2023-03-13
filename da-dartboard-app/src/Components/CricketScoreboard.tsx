@@ -17,9 +17,10 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { Client, ClientState } from "boardgame.io/dist/types/src/client/client";
+import { State } from "boardgame.io";
+import { Client } from "boardgame.io/dist/types/src/client/client";
 import { FunctionComponent } from "react";
-import { CricketState } from "../Games/Cricket";
+import { DartsGameCricketState } from "../Games/DartsGame";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -60,7 +61,7 @@ const getSectionIcon = (hitCount: number | undefined) => {
 };
 
 export const CricketScoreboard: FunctionComponent<{
-  gameState: ClientState<CricketState>;
+  gameState: State<DartsGameCricketState>;
   client: ReturnType<typeof Client<any>>;
 }> = (props) => {
   return (
@@ -111,41 +112,51 @@ export const CricketScoreboard: FunctionComponent<{
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.players[row.toString()].sectionsHit[15]
+                      props.gameState?.G.phaseData?.playerData[row.toString()]
+                        .sectionsHit[15]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.players[row.toString()].sectionsHit[16]
+                      props.gameState?.G.phaseData?.playerData[row.toString()]
+                        .sectionsHit[16]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.players[row.toString()].sectionsHit[17]
+                      props.gameState?.G.phaseData?.playerData[row.toString()]
+                        .sectionsHit[17]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.players[row.toString()].sectionsHit[18]
+                      props.gameState?.G.phaseData?.playerData[row.toString()]
+                        .sectionsHit[18]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.players[row.toString()].sectionsHit[19]
+                      props.gameState?.G.phaseData?.playerData[row.toString()]
+                        .sectionsHit[19]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.players[row.toString()].sectionsHit[20]
+                      props.gameState?.G.phaseData?.playerData[row.toString()]
+                        .sectionsHit[20]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {getSectionIcon(
-                      props.gameState?.G.players[row.toString()].sectionsHit[25]
+                      props.gameState?.G.phaseData?.playerData[row.toString()]
+                        .sectionsHit[25]
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="center" sx={{ fontWeight: "bold" }}>
-                    {props.gameState?.G.players[row.toString()].score}
+                    {
+                      props.gameState?.G.phaseData?.playerData[row.toString()]
+                        .score
+                    }
                   </StyledTableCell>
                 </StyledTableRow>
               )

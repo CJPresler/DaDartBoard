@@ -12,13 +12,22 @@ import {
 import { Icon } from "@mdi/react";
 import { mdiBluetooth, mdiBluetoothConnect, mdiArrowProjectile } from "@mdi/js";
 import { Granboard } from "../Utillities/Granboard";
-import { CricketState } from "../Games/Cricket";
 import { ClientState } from "boardgame.io/dist/types/src/client/client";
 import Confetti from "react-confetti";
 import { Dartboard } from "../Components/Dartboard";
 import { CricketScoreboard } from "../Components/CricketScoreboard";
-import { Standard01State } from "../Games/Standard01";
 import { Standard01Scoreboard } from "../Components/Standard01Scoreboard";
+import {
+  DartsGameCricketState,
+  DartsGameStandard01State,
+  DartsGameState,
+} from "../Games/DartsGame";
+import { State } from "boardgame.io";
+import {
+  DartsGamePhases,
+  DartsGameTypes,
+} from "../Games/Utilities/DartsGameUtilities";
+import { GameConfig } from "../Components/GameConfig";
 
 const DartboardContainer = styled(Container)(({ theme }) => ({
   maxWidth: "500px",
@@ -28,26 +37,13 @@ const DartboardContainer = styled(Container)(({ theme }) => ({
   },
 }));
 
-export enum SupportedGameTypes {
-  Cricket = "Cricket",
-  Standard01 = "Standard01",
-}
-
-export type SupportedGameStates =
-  | ClientState<CricketState>
-  | ClientState<Standard01State>;
-
-export type SupportedClientTypes =
-  | ReturnType<typeof Client<CricketState>>
-  | ReturnType<typeof Client<Standard01State>>;
-
 interface DartsGameProps {
   gameStateChanged?: (state: ClientState<any>) => void;
-  client: SupportedClientTypes | undefined;
+  client: ReturnType<typeof Client<DartsGameState>> | undefined;
 }
 
-export const DartsGame = (props: DartsGameProps) => {
-  const [gameState, setGameState] = useState<SupportedGameStates>();
+export const DartsGameBoard = (props: DartsGameProps) => {
+  const [gameState, setGameState] = useState<ClientState<DartsGameState>>();
 
   const [granboard, setGranboard] = useState<Granboard>();
 
@@ -150,12 +146,14 @@ export const DartsGame = (props: DartsGameProps) => {
                   >
                     {Array.from(Array(3).keys()).map((i) => (
                       <Grid item>
-                        {gameState?.G.players[gameState?.ctx.currentPlayer]
-                          .dartThrows[0][i]?.ShortName ? (
+                        {gameState?.G.commonPlayerData[
+                          gameState?.ctx.currentPlayer
+                        ].dartThrows[0][i]?.ShortName ? (
                           <div style={{ height: 54 }}>
                             {
-                              gameState?.G.players[gameState?.ctx.currentPlayer]
-                                .dartThrows[0][i]?.ShortName
+                              gameState?.G.commonPlayerData[
+                                gameState?.ctx.currentPlayer
+                              ].dartThrows[0][i]?.ShortName
                             }
                           </div>
                         ) : (
@@ -170,15 +168,7 @@ export const DartsGame = (props: DartsGameProps) => {
                     variant="outlined"
                     aria-label="outlined button group"
                   >
-                    {gameState.G.winner && (
-                      <Button
-                        className="cta"
-                        onClick={() => props.client?.moves.rematch?.()}
-                      >
-                        Rematch
-                      </Button>
-                    )}
-                    {!gameState.G.winner && (
+                    {gameState.G.gamePhase === DartsGamePhases.InGame && (
                       <Fragment>
                         <Button
                           className="cta"
@@ -191,20 +181,35 @@ export const DartsGame = (props: DartsGameProps) => {
                         </Button>
                       </Fragment>
                     )}
+                    {gameState.G.gamePhase === DartsGamePhases.GameOver && (
+                      <Button
+                        className="cta"
+                        onClick={() => props.client?.moves.rematch?.()}
+                      >
+                        Rematch
+                      </Button>
+                    )}
                   </ButtonGroup>
                 </Container>
               </Grid>
-              {gameState.G.gameType === "Cricket" && (
-                <CricketScoreboard
-                  gameState={gameState as ClientState<CricketState>}
-                  client={props.client}
-                />
+              {gameState.G.gamePhase !== DartsGamePhases.GameConfig && (
+                <Fragment>
+                  {gameState.G.gameType === DartsGameTypes.Cricket && (
+                    <CricketScoreboard
+                      gameState={gameState as State<DartsGameCricketState>}
+                      client={props.client}
+                    />
+                  )}
+                  {gameState.G.gameType === DartsGameTypes.Standard01 && (
+                    <Standard01Scoreboard
+                      gameState={gameState as State<DartsGameStandard01State>}
+                      client={props.client}
+                    />
+                  )}
+                </Fragment>
               )}
-              {gameState.G.gameType === "Standard01" && (
-                <Standard01Scoreboard
-                  gameState={gameState as ClientState<Standard01State>}
-                  client={props.client}
-                />
+              {gameState.G.gamePhase === DartsGamePhases.GameConfig && (
+                <GameConfig client={props.client} gameState={gameState} />
               )}
             </Grid>
           </Fragment>
