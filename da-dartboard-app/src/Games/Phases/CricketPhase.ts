@@ -42,9 +42,9 @@ export const cricketPhase: PhaseMap<DartsGameState> = {
       for (let i = 0; i < state.ctx.numPlayers; i++) {
         playerData[i.toString()] = {
           score: 0,
-          //sectionsHit: { 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0 },
+          sectionsHit: { 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0 },
           // Near victory start
-          sectionsHit: { 15: 3, 16: 3, 17: 3, 18: 3, 19: 3, 20: 3, 25: 0 },
+          // sectionsHit: { 15: 3, 16: 3, 17: 3, 18: 3, 19: 3, 20: 3, 25: 0 },
         };
       }
 
