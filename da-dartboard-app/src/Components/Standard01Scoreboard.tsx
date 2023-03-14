@@ -14,9 +14,7 @@ export const Standard01Scoreboard: FunctionComponent<{
     <Grid container item xs={12} lg={6}>
       {props.client.matchData
         ?.filter((matchData) =>
-          props.gameState.G.gameConfig.playOrder.includes(
-            matchData.id.toString()
-          )
+          props.gameState.G.playOrder.includes(matchData.id.toString())
         )
         .map((matchData) => (
           <Grid

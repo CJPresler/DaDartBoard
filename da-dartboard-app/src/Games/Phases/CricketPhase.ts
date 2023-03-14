@@ -32,7 +32,8 @@ export const cricketPhase: PhaseMap<DartsGameState> = {
     turn: {
       order: {
         ...TurnOrder.RESET,
-        playOrder: (context) => context.G.gameConfig.playOrder,
+        first: (context) => context.G.startingPlayerIndex,
+        playOrder: (context) => context.G.playOrder,
       },
       onEnd: commonTurnEnd,
     },
@@ -42,7 +43,7 @@ export const cricketPhase: PhaseMap<DartsGameState> = {
       state.G.gameType = DartsGameTypes.Cricket;
 
       const playerData: Record<string, CricketPlayerData> = {};
-      state.G.gameConfig.playOrder.forEach((playerID) => {
+      state.G.playOrder.forEach((playerID) => {
         playerData[playerID] = {
           score: 0,
           sectionsHit: { 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0 },
@@ -89,7 +90,7 @@ export const cricketPhase: PhaseMap<DartsGameState> = {
           // Check every other player to see if the section is still open
           let sectionIsClosed = true;
 
-          state.G.gameConfig.playOrder.forEach((playerID) => {
+          state.G.playOrder.forEach((playerID) => {
             if (
               playerID === state.ctx.currentPlayer ||
               state.G.gameType !== DartsGameTypes.Cricket ||
@@ -133,7 +134,7 @@ export const cricketPhase: PhaseMap<DartsGameState> = {
 
           let hasHighestScore = true;
           if (allSectionsClosed) {
-            state.G.gameConfig.playOrder.every((playerID) => {
+            state.G.playOrder.every((playerID) => {
               if (
                 playerID === state.ctx.currentPlayer ||
                 state.G.gameType !== DartsGameTypes.Cricket ||

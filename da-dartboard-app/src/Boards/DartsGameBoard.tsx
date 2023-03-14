@@ -90,106 +90,113 @@ export const DartsGameBoard = (props: DartsGameProps) => {
         )}
         {props.client && props.client.playerID && gameState && (
           <Fragment>
-            <Grid container alignItems="center" columnSpacing={4}>
-              <Grid item xs={12} lg={6}>
-                {gameState.G.winner && (
-                  <Fragment>
-                    <Confetti />
-                    <h3>{`${
-                      props.client.matchData?.at(parseInt(gameState.G.winner))
-                        ?.name ?? `Player ${gameState.G.winner}`
-                    } Wins!`}</h3>
-                  </Fragment>
-                )}
-                {!gameState.G.winner && (
-                  <h2>
-                    {`${
-                      gameState?.ctx.currentPlayer
-                        ? props.client.matchData?.at(
-                            parseInt(gameState.ctx.currentPlayer)
-                          )?.name ?? "Oponnent"
-                        : "Oponnent"
-                    }'s Turn`}
-                  </h2>
-                )}
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="center"
+              columnSpacing={4}
+            >
+              {gameState.G.gamePhase !== DartsGamePhases.GameConfig && (
+                <Grid item xs={12} lg={6}>
+                  {gameState.G.winner && (
+                    <Fragment>
+                      <Confetti />
+                      <h3>{`${
+                        props.client.matchData?.at(parseInt(gameState.G.winner))
+                          ?.name ?? `Player ${gameState.G.winner}`
+                      } Wins!`}</h3>
+                    </Fragment>
+                  )}
+                  {!gameState.G.winner && (
+                    <h2>
+                      {`${
+                        gameState?.ctx.currentPlayer
+                          ? props.client.matchData?.at(
+                              parseInt(gameState.ctx.currentPlayer)
+                            )?.name ?? "Oponnent"
+                          : "Oponnent"
+                      }'s Turn`}
+                    </h2>
+                  )}
 
-                <DartboardContainer style={{ position: "relative" }}>
-                  <Dartboard
-                    borderGlow={gameState.isActive}
-                    highlightSegmentShortName={gameState.G.lastHit?.ShortName}
-                    onSegmentClicked={onSegmentHit}
-                  />
-                  <Button
-                    className="cta"
-                    sx={{ position: "absolute", top: 0, right: 0 }}
-                    onClick={async () => {
-                      setGranboard(
-                        await Granboard.ConnectToBoard(onSegmentHit)
-                      );
-                    }}
-                  >
-                    <Icon
-                      path={granboard ? mdiBluetoothConnect : mdiBluetooth}
+                  <DartboardContainer style={{ position: "relative" }}>
+                    <Dartboard
+                      borderGlow={gameState.isActive}
+                      highlightSegmentShortName={gameState.G.lastHit?.ShortName}
+                      onSegmentClicked={onSegmentHit}
                     />
-                  </Button>
-                  <h3
-                    style={{ position: "absolute", top: -5, left: 0 }}
-                  >{`Round ${Math.ceil(
-                    gameState.G.turn / gameState.G.gameConfig.playOrder.length
-                  )}`}</h3>
-                  <Grid
-                    container
-                    justifyContent={"space-evenly"}
-                    style={{ fontWeight: "bolder", fontSize: "2.5vh" }}
-                  >
-                    {Array.from(Array(3).keys()).map((i) => (
-                      <Grid item>
-                        {gameState?.G.commonPlayerData[
-                          gameState?.ctx.currentPlayer
-                        ].dartThrows[0][i]?.ShortName ? (
-                          <div style={{ height: 54 }}>
-                            {
-                              gameState?.G.commonPlayerData[
-                                gameState?.ctx.currentPlayer
-                              ].dartThrows[0][i]?.ShortName
-                            }
-                          </div>
-                        ) : (
-                          <Icon path={mdiArrowProjectile} size="40" />
-                        )}
-                      </Grid>
-                    ))}
-                  </Grid>
-                </DartboardContainer>
-                <Container maxWidth="md">
-                  <ButtonGroup
-                    variant="outlined"
-                    aria-label="outlined button group"
-                  >
-                    {gameState.G.gamePhase === DartsGamePhases.InGame && (
-                      <Fragment>
+                    <Button
+                      className="cta"
+                      sx={{ position: "absolute", top: 0, right: 0 }}
+                      onClick={async () => {
+                        setGranboard(
+                          await Granboard.ConnectToBoard(onSegmentHit)
+                        );
+                      }}
+                    >
+                      <Icon
+                        path={granboard ? mdiBluetoothConnect : mdiBluetooth}
+                      />
+                    </Button>
+                    <h3
+                      style={{ position: "absolute", top: -5, left: 0 }}
+                    >{`Round ${Math.ceil(
+                      gameState.G.turn / gameState.G.playOrder.length
+                    )}`}</h3>
+                    <Grid
+                      container
+                      justifyContent={"space-evenly"}
+                      style={{ fontWeight: "bolder", fontSize: "2.5vh" }}
+                    >
+                      {Array.from(Array(3).keys()).map((i) => (
+                        <Grid item>
+                          {gameState?.G.commonPlayerData[
+                            gameState?.ctx.currentPlayer
+                          ].dartThrows[0][i]?.ShortName ? (
+                            <div style={{ height: 54 }}>
+                              {
+                                gameState?.G.commonPlayerData[
+                                  gameState?.ctx.currentPlayer
+                                ].dartThrows[0][i]?.ShortName
+                              }
+                            </div>
+                          ) : (
+                            <Icon path={mdiArrowProjectile} size="40" />
+                          )}
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </DartboardContainer>
+                  <Container maxWidth="md">
+                    <ButtonGroup
+                      variant="outlined"
+                      aria-label="outlined button group"
+                    >
+                      {gameState.G.gamePhase === DartsGamePhases.InGame && (
+                        <Fragment>
+                          <Button
+                            className="cta"
+                            onClick={() => props.client?.events.endTurn?.()}
+                          >
+                            End Turn
+                          </Button>
+                          <Button className="cta" onClick={props.client.undo}>
+                            Undo
+                          </Button>
+                        </Fragment>
+                      )}
+                      {gameState.G.gamePhase === DartsGamePhases.GameOver && (
                         <Button
                           className="cta"
-                          onClick={() => props.client?.events.endTurn?.()}
+                          onClick={() => props.client?.moves.rematch?.()}
                         >
-                          End Turn
+                          Rematch
                         </Button>
-                        <Button className="cta" onClick={props.client.undo}>
-                          Undo
-                        </Button>
-                      </Fragment>
-                    )}
-                    {gameState.G.gamePhase === DartsGamePhases.GameOver && (
-                      <Button
-                        className="cta"
-                        onClick={() => props.client?.moves.rematch?.()}
-                      >
-                        Rematch
-                      </Button>
-                    )}
-                  </ButtonGroup>
-                </Container>
-              </Grid>
+                      )}
+                    </ButtonGroup>
+                  </Container>
+                </Grid>
+              )}
               {gameState.G.gamePhase !== DartsGamePhases.GameConfig && (
                 <Fragment>
                   {gameState.G.gameType === DartsGameTypes.Cricket && (

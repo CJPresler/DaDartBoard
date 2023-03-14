@@ -25,6 +25,7 @@ import {
 import { AutoJoinClient } from "./Utillities/AutoJoinClient";
 import { _ClientImpl } from "boardgame.io/dist/types/src/client/client";
 import { DartsGame } from "./Games/DartsGame";
+import { DartsGamePhases } from "./Games/Utilities/DartsGameUtilities";
 
 // Request to keep the device alive so the game doesn't disconnect
 (navigator as any)?.wakeLock.request();
@@ -212,6 +213,14 @@ function App() {
             <CopyBtn value={joinURL}>Copy share URL</CopyBtn>
             <Button type="button" onClick={() => setAddPlayer(true)}>
               Add local player
+            </Button>
+            <Button
+              type="button"
+              onClick={() =>
+                activeClient.events.setPhase?.(DartsGamePhases.GameConfig)
+              }
+            >
+              Reconfigure game
             </Button>
           </div>
         )}

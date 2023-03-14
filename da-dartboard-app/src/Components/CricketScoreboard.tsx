@@ -84,9 +84,7 @@ export const CricketScoreboard: FunctionComponent<{
           <TableBody>
             {props.client.matchData
               ?.filter((matchData) =>
-                props.gameState.G.gameConfig.playOrder.includes(
-                  matchData.id.toString()
-                )
+                props.gameState.G.playOrder.includes(matchData.id.toString())
               )
               .map((matchData) => (
                 <StyledTableRow

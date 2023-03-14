@@ -5,7 +5,7 @@ import {
   Segment,
   SegmentID,
 } from "../../Utillities/DartboardUtilities";
-import { DartsGameConfig, DartsGameState } from "../DartsGame";
+import { DartsGameState } from "../DartsGame";
 import {
   commonDartHit,
   commonTurnEnd,
@@ -17,10 +17,6 @@ export interface Standard01PlayerData {
   score: number;
 }
 
-export interface Standard01GameConfig extends DartsGameConfig {
-  startingScore: number;
-}
-
 export interface Standard01PhaseData {
   playerData: Record<string, Standard01PlayerData>;
 }
@@ -30,7 +26,8 @@ export const standard01Phase: PhaseMap<DartsGameState> = {
     turn: {
       order: {
         ...TurnOrder.RESET,
-        playOrder: (context) => context.G.gameConfig.playOrder,
+        first: (context) => context.G.startingPlayerIndex,
+        playOrder: (context) => context.G.playOrder,
       },
       onEnd: commonTurnEnd,
     },
@@ -39,9 +36,9 @@ export const standard01Phase: PhaseMap<DartsGameState> = {
       state.G.gamePhase = DartsGamePhases.InGame;
       state.G.gameType = DartsGameTypes.Standard01;
       const playerData: Record<string, Standard01PlayerData> = {};
-      state.G.gameConfig.playOrder.forEach((playerID) => {
+      state.G.playOrder.forEach((playerID) => {
         playerData[playerID] = {
-          score: 501,
+          score: state.G.gameConfig.standard01Score,
         };
       });
 
