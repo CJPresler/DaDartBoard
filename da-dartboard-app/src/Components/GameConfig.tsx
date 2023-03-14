@@ -53,7 +53,7 @@ export const GameConfig: FunctionComponent<{
   );
 
   return (
-    <Grid container item xs={12} lg={6}>
+    <Grid container item xs={12} sm={10} md={8} lg={6}>
       <Grid container item xs={12} columnSpacing={2} rowSpacing={2}>
         <Grid item xs={12}>
           <h2>Current Players</h2>
@@ -61,7 +61,7 @@ export const GameConfig: FunctionComponent<{
         {props.client.matchData
           ?.filter((matchData) => matchData.isConnected)
           .map((matchData) => (
-            <Grid item xs={3}>
+            <Grid item xs={6} sm={4} md={3}>
               <Card elevation={2}>
                 <CardContent>
                   <Icon
