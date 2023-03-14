@@ -237,7 +237,6 @@ function App() {
             </Button>
             <Button
               type="button"
-              disabled={!activeClient.getState()?.isActive}
               onClick={() =>
                 activeClient.events.setPhase?.(DartsGamePhases.GameConfig)
               }
