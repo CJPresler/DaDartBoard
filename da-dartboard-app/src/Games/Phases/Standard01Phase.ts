@@ -90,10 +90,20 @@ export const standard01Phase: PhaseMap<DartsGameState> = {
               state.events.endPhase();
             }
           } else {
-            // The player has busted. Add misses for any remaining throws
+            // Revert previously counted throws due to the bust (ignore the current throw as it wasn't counted)
+            for (
+              let i = 0;
+              i < commonPlayerState.dartThrows[0].length - 1;
+              i++
+            ) {
+              playerState.score += commonPlayerState.dartThrows[0][i].Value;
+            }
+
+            // The player has busted. Add misses for any remaining throws and
+            // reset points to the beginning of the leg
             for (let i = commonPlayerState.dartThrows[0].length; i < 3; i++) {
               commonPlayerState.dartThrows[0].push(
-                CreateSegment(SegmentID.MISS)
+                CreateSegment(SegmentID.BUST)
               );
             }
           }

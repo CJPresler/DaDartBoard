@@ -1,6 +1,7 @@
 import React, {
   ChangeEvent,
   FormEvent,
+  Fragment,
   useCallback,
   useMemo,
   useRef,
@@ -21,6 +22,8 @@ import {
   SelectChangeEvent,
   Snackbar,
   Alert,
+  Stack,
+  Divider,
 } from "@mui/material";
 import { AutoJoinClient } from "./Utillities/AutoJoinClient";
 import { _ClientImpl } from "boardgame.io/dist/types/src/client/client";
@@ -147,7 +150,7 @@ function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <div className="App">
+      <div className="App content">
         {(!activeClient || addPlayer) && (
           <Box
             sx={{
@@ -198,7 +201,7 @@ function App() {
           </Box>
         )}
         {activeClient && !addPlayer && (
-          <div>
+          <Fragment>
             <div className="game-frame">
               <DartsGameBoard
                 client={activeClient}
@@ -210,19 +213,7 @@ function App() {
                 PeerJS Error: <code>{error}</code>
               </p>
             )}
-            <CopyBtn value={joinURL}>Copy share URL</CopyBtn>
-            <Button type="button" onClick={() => setAddPlayer(true)}>
-              Add local player
-            </Button>
-            <Button
-              type="button"
-              onClick={() =>
-                activeClient.events.setPhase?.(DartsGamePhases.GameConfig)
-              }
-            >
-              Reconfigure game
-            </Button>
-          </div>
+          </Fragment>
         )}
       </div>
       <Snackbar
@@ -232,6 +223,30 @@ function App() {
       >
         <Alert severity="success">{toastMessage}</Alert>
       </Snackbar>
+      <footer className="footer">
+        {activeClient && !addPlayer && (
+          <Stack
+            direction="row"
+            justifyContent="center"
+            divider={<Divider orientation="vertical" flexItem />}
+            spacing={2}
+          >
+            <CopyBtn value={joinURL}>Copy share URL</CopyBtn>
+            <Button type="button" onClick={() => setAddPlayer(true)}>
+              Add local player
+            </Button>
+            <Button
+              type="button"
+              disabled={!activeClient.getState()?.isActive}
+              onClick={() =>
+                activeClient.events.setPhase?.(DartsGamePhases.GameConfig)
+              }
+            >
+              Reconfigure game
+            </Button>
+          </Stack>
+        )}
+      </footer>
     </ThemeProvider>
   );
 }

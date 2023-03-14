@@ -82,6 +82,7 @@ export enum SegmentID {
   BULL,
   DBL_BULL,
   MISS,
+  BUST,
   RESET_BUTTON,
 }
 
@@ -107,8 +108,7 @@ export enum SegmentSection {
   Nineteen,
   Twenty,
   BULL = 25,
-  MISS,
-  RESET_BUTTON,
+  Other,
 }
 
 export enum SegmentType {
@@ -178,17 +178,26 @@ export const CreateSegment = (segmentId: SegmentID): Segment => {
         return {
           ID: segmentId,
           Type: SegmentType.Other,
-          Section: SegmentSection.RESET_BUTTON,
+          Section: SegmentSection.Other,
           Value: 0,
           LongName: "Reset Button",
           ShortName: "RST",
+        };
+      case SegmentID.BUST:
+        return {
+          ID: segmentId,
+          Type: SegmentType.Other,
+          Section: SegmentSection.Other,
+          Value: 0,
+          LongName: "Bust",
+          ShortName: "Bust",
         };
       case SegmentID.MISS:
       default:
         return {
           ID: segmentId,
           Type: SegmentType.Other,
-          Section: SegmentSection.RESET_BUTTON,
+          Section: SegmentSection.Other,
           Value: 0,
           LongName: "Miss",
           ShortName: "Miss",
