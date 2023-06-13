@@ -46,6 +46,7 @@ export const DartsGameBoard = (props: DartsGameProps) => {
   const [gameState, setGameState] = useState<ClientState<DartsGameState>>();
 
   const [granboard, setGranboard] = useState<Granboard>();
+  const [ignoreInputs, setIgnoreInputs] = useState<boolean>(false);
 
   useEffect(() => {
     if (!props.client) {
@@ -72,14 +73,28 @@ export const DartsGameBoard = (props: DartsGameProps) => {
         return;
       }
 
+      // We're in a state where inputs should be ignored
+      if (ignoreInputs) {
+        return;
+      }
+
       if (segment.ID === SegmentID.RESET_BUTTON) {
         // The reset button is a special case and is used to end the turn
         props.client.events.endTurn?.();
+
+        // Ignore any inputs for 5 seconds
+        setIgnoreInputs(true);
+        setTimeout(() => {
+          setIgnoreInputs(false);
+        }, 5000);
+
         return;
       }
+
+      // This is a normal dart hit. Pass it on to the specific came to process
       props.client.moves.dartHit(segment);
     },
-    [props.client]
+    [props.client, ignoreInputs]
   );
 
   return (
