@@ -153,6 +153,9 @@ export const DartsGameBoard = (props: DartsGameProps) => {
                       className="cta"
                       sx={{ position: "absolute", top: 0, right: 0 }}
                       onClick={async () => {
+                        if (granboard) {
+                          granboard.segmentHitCallback = undefined;
+                        }
                         setGranboard(await Granboard.ConnectToBoard());
                       }}
                     >
