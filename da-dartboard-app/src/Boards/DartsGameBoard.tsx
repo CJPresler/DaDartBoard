@@ -97,6 +97,15 @@ export const DartsGameBoard = (props: DartsGameProps) => {
     [props.client, ignoreInputs]
   );
 
+  // Keep the granboard handler in sync with the callback
+  useEffect(() => {
+    if (!granboard) {
+      return;
+    }
+
+    granboard.segmentHitCallback = onSegmentHit;
+  }, [granboard, onSegmentHit]);
+
   return (
     <Container id="dartboard" maxWidth="xl">
       <Stack spacing={2}>
@@ -144,9 +153,7 @@ export const DartsGameBoard = (props: DartsGameProps) => {
                       className="cta"
                       sx={{ position: "absolute", top: 0, right: 0 }}
                       onClick={async () => {
-                        setGranboard(
-                          await Granboard.ConnectToBoard(onSegmentHit)
-                        );
+                        setGranboard(await Granboard.ConnectToBoard());
                       }}
                     >
                       <Icon

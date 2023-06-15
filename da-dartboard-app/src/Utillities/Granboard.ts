@@ -91,11 +91,9 @@ const SEGMENT_MAPPING = {
 export class Granboard {
   private readonly bluetoothConnection: BluetoothRemoteGATTCharacteristic;
 
-  private readonly segmentHitCallback: (segment: Segment) => void;
+  public segmentHitCallback?: (segment: Segment) => void;
 
-  public static async ConnectToBoard(
-    callback: (segment: Segment) => void
-  ): Promise<Granboard> {
+  public static async ConnectToBoard(): Promise<Granboard> {
     const boardBluetooth = await navigator.bluetooth.requestDevice({
       filters: [{ services: [GRANBOARD_UUID] }],
     });
@@ -122,19 +120,15 @@ export class Granboard {
       );
     }
 
-    const board = new Granboard(boardCharacteristic, callback);
+    const board = new Granboard(boardCharacteristic);
 
     await boardCharacteristic.startNotifications();
 
     return board;
   }
 
-  private constructor(
-    bluetoothConnection: BluetoothRemoteGATTCharacteristic,
-    callback: (segment: Segment) => void
-  ) {
+  private constructor(bluetoothConnection: BluetoothRemoteGATTCharacteristic) {
     this.bluetoothConnection = bluetoothConnection;
-    this.segmentHitCallback = callback;
 
     this.bluetoothConnection.addEventListener(
       "characteristicvaluechanged",
@@ -154,7 +148,7 @@ export class Granboard {
 
     if (segmentID !== undefined) {
       console.log(segmentID);
-      this.segmentHitCallback(CreateSegment(segmentID));
+      this.segmentHitCallback?.(CreateSegment(segmentID));
     } else {
       console.log(`Unknown segment: ${segmentID}`);
     }
