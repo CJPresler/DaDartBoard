@@ -5,6 +5,7 @@ import {
   SegmentID,
 } from "../../Utillities/DartboardUtilities";
 import { DartsGameState } from "../DartsGame";
+import { PlaySound, Sound } from "./SoundBoard";
 
 export enum DartsGamePhases {
   GameConfig = "GameConfig",
@@ -27,6 +28,7 @@ export const commonDartHit: MoveFn<DartsGameState> = (
       segment
     );
     state.G.lastHit = segment;
+    PlaySound(Sound.DartHit);
   }
 };
 
@@ -47,4 +49,6 @@ export const commonTurnEnd = (state: FnContext<DartsGameState>) => {
 
   // Rev the turn count
   state.G.turn++;
+
+  PlaySound(Sound.SwitchPlayer);
 };

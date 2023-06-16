@@ -1,6 +1,7 @@
 import { PhaseMap } from "boardgame.io";
 import { createInitialState, DartsGameState } from "../DartsGame";
 import { DartsGamePhases } from "../Utilities/DartsGameUtilities";
+import { PlaySound, Sound } from "../Utilities/SoundBoard";
 
 export const gameOverPhase: PhaseMap<DartsGameState> = {
   [DartsGamePhases.GameOver]: {
@@ -10,6 +11,7 @@ export const gameOverPhase: PhaseMap<DartsGameState> = {
     },
     onBegin: (state) => {
       state.G.gamePhase = DartsGamePhases.GameOver;
+      PlaySound(Sound.GruntBDay);
     },
     moves: {
       rematch: (state) => {

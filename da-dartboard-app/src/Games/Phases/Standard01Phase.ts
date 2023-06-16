@@ -12,6 +12,7 @@ import {
   DartsGamePhases,
   DartsGameTypes,
 } from "../Utilities/DartsGameUtilities";
+import { PlaySound, Sound } from "../Utilities/SoundBoard";
 
 export interface Standard01PlayerData {
   score: number;
@@ -53,11 +54,13 @@ export const standard01Phase: PhaseMap<DartsGameState> = {
           ) {
             // We shouldn't get into this state as the phaseData should be initialized in the phase onBegin
             console.error("phaseData is empty for this player");
+            PlaySound(Sound.DartHitError);
             return INVALID_MOVE;
           }
 
           // Limit dart throws to 3 per move
           if ((state.ctx.numMoves ?? 0) > 2) {
+            PlaySound(Sound.DartHitError);
             return INVALID_MOVE;
           }
 
@@ -73,6 +76,7 @@ export const standard01Phase: PhaseMap<DartsGameState> = {
 
           // Check if the player isn't out of turns, but is out of throws due to a bust
           if (commonPlayerState.dartThrows[0].length >= 3) {
+            PlaySound(Sound.DartHitError);
             return undefined;
           }
 

@@ -8,6 +8,7 @@ import {
   DartsGamePhases,
   DartsGameTypes,
 } from "../Utilities/DartsGameUtilities";
+import { PlaySound, Sound } from "../Utilities/SoundBoard";
 
 export type CricketSegmentSections =
   | SegmentSection.Fifteen
@@ -63,11 +64,13 @@ export const cricketPhase: PhaseMap<DartsGameState> = {
           ) {
             // We shouldn't get into this state as the phaseData should be initialized in the phase onBegin
             console.error("phaseData is empty for this player");
+            PlaySound(Sound.DartHitError);
             return INVALID_MOVE;
           }
 
           // If the space was already occupied or a move has allready occured in this turn it is invalid
           if ((state.ctx.numMoves ?? 0) > 2) {
+            PlaySound(Sound.DartHitError);
             return INVALID_MOVE;
           }
 
